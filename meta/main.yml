@@ -2,9 +2,9 @@
 galaxy_info:
   author: Suguru Hirahara
   company: progressiv
-  role_name: yacy
+  role_name: sftpgo
   namespace: progressiv
-  description: YaCy
+  description: SFTPGo
   platforms:
     - name: Debian
       versions:

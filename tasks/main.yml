@@ -4,32 +4,32 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-- name: Perform YaCy installation tasks
-  when: yacy_enabled | bool
+- name: Perform SFTPGo installation tasks
+  when: sftpgo_enabled | bool
   tags:
     - setup-all
-    - setup-yacy
+    - setup-sftpgo
     - install-all
-    - install-yacy
+    - install-sftpgo
   block:
-    - name: Validate YaCy configuration
+    - name: Validate SFTPGo configuration
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
-    - name: Install YaCy
+    - name: Install SFTPGo
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
 
-- name: Perform tasks to set YaCy admin user password
-  when: yacy_enabled | bool
+- name: Perform tasks to set SFTPGo admin user password
+  when: sftpgo_enabled | bool
   tags:
-    - ensure-yacy-admin-password
+    - ensure-sftpgo-admin-password
   block:
-    - name: Set YaCy admin user password
+    - name: Set SFTPGo admin user password
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/set_admin_password.yml"
 
-- name: Perform YaCy uninstallation tasks
-  when: not yacy_enabled | bool
+- name: Perform SFTPGo uninstallation tasks
+  when: not sftpgo_enabled | bool
   tags:
     - setup-all
-    - setup-yacy
+    - setup-sftpgo
   block:
-    - name: Uninstall YaCy
+    - name: Uninstall SFTPGo
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"

@@ -4,63 +4,63 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-- name: Check existence of YaCy systemd service
+- name: Check existence of SFTPGo systemd service
   ansible.builtin.stat:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ yacy_identifier }}.service"
-  register: yacy_service_stat
+    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ sftpgo_identifier }}.service"
+  register: sftpgo_service_stat
 
-- name: Uninstall YaCy systemd services and files
-  when: yacy_service_stat.stat.exists | bool
+- name: Uninstall SFTPGo systemd services and files
+  when: sftpgo_service_stat.stat.exists | bool
   block:
-    - name: Ensure YaCy systemd service is stopped
+    - name: Ensure SFTPGo systemd service is stopped
       ansible.builtin.service:
-        name: "{{ yacy_identifier }}"
+        name: "{{ sftpgo_identifier }}"
         state: stopped
         enabled: false
         daemon_reload: true
 
-    - name: Ensure YaCy systemd service does not exist
+    - name: Ensure SFTPGo systemd service does not exist
       ansible.builtin.file:
-        path: "{{ devture_systemd_docker_base_systemd_path }}/{{ yacy_identifier }}.service"
+        path: "{{ devture_systemd_docker_base_systemd_path }}/{{ sftpgo_identifier }}.service"
         state: absent
 
-    - name: Ensure YaCy support files do not exist
+    - name: Ensure SFTPGo support files do not exist
       ansible.builtin.file:
-        path: "{{ yacy_base_path }}/{{ item }}"
+        path: "{{ sftpgo_base_path }}/{{ item }}"
         state: absent
       with_items:
         - env
         - labels
 
-    - name: Ensure YaCy container network does not exist via community.docker.docker_network
+    - name: Ensure SFTPGo container network does not exist via community.docker.docker_network
       when: devture_systemd_docker_base_container_network_creation_method == 'ansible-module'
       community.docker.docker_network:
-        name: "{{ yacy_container_network }}"
+        name: "{{ sftpgo_container_network }}"
         state: absent
 
-    - name: Ensure YaCy container network does not exist via ansible.builtin.command
+    - name: Ensure SFTPGo container network does not exist via ansible.builtin.command
       when: devture_systemd_docker_base_container_network_creation_method == 'command'
       ansible.builtin.command:
         cmd: >-
           {{ devture_systemd_docker_base_host_command_docker }} network rm
-          {{ yacy_container_network }}
+          {{ sftpgo_container_network }}
       register: network_deletion_result
-      changed_when: yacy_container_network in network_deletion_result.stdout
+      changed_when: sftpgo_container_network in network_deletion_result.stdout
 
-- name: Check existence of YaCy local data path
+- name: Check existence of SFTPGo local data path
   ansible.builtin.stat:
-    path: "{{ yacy_data_path }}"
-  register: yacy_data_path_stat
+    path: "{{ sftpgo_data_path }}"
+  register: sftpgo_data_path_stat
 
 # We just want to notify the user. Deleting data is too destructive.
-- name: Notify if YaCy local data remains
-  when: yacy_data_path_stat.stat.exists | bool
+- name: Notify if SFTPGo local data remains
+  when: sftpgo_data_path_stat.stat.exists | bool
   ansible.builtin.set_fact:
     devture_playbook_runtime_messages_list: |
       {{
         devture_playbook_runtime_messages_list | default([])
         +
         [
-          "Note: As the local YaCy instance has been removed, some old data remains in `{{ yacy_data_path }}`. Feel free to delete it."
+          "Note: As the local SFTPGo instance has been removed, some old data remains in `{{ sftpgo_data_path }}`. Feel free to delete it."
         ]
       }}
