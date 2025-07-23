@@ -1,0 +1,52 @@
+{#
+SPDX-FileCopyrightText: 2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+{% if yacy_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if yacy_container_labels_traefik_docker_network %}
+traefik.docker.network={{ yacy_container_labels_traefik_docker_network }}
+{% endif %}
+
+{% set middlewares = [] %}
+
+{% if yacy_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.{{ yacy_identifier }}-slashless-redirect.redirectregex.regex=({{ yacy_container_labels_traefik_path_prefix | quote }})$
+traefik.http.middlewares.{{ yacy_identifier }}-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + [yacy_identifier + '-slashless-redirect'] %}
+{% endif %}
+
+{% if yacy_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.{{ yacy_identifier }}-strip-prefix.stripprefix.prefixes={{ yacy_container_labels_traefik_path_prefix }}
+{% set middlewares = middlewares + [yacy_identifier + '-strip-prefix'] %}
+{% endif %}
+
+{% if yacy_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% for name, value in yacy_container_labels_traefik_additional_response_headers.items() %}
+traefik.http.middlewares.{{ yacy_identifier }}-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + [yacy_identifier + '-add-headers'] %}
+{% endif %}
+
+traefik.http.routers.{{ yacy_identifier }}.rule={{ yacy_container_labels_traefik_rule }}
+{% if yacy_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.{{ yacy_identifier }}.priority={{ yacy_container_labels_traefik_priority }}
+{% endif %}
+traefik.http.routers.{{ yacy_identifier }}.service={{ yacy_identifier }}
+{% if middlewares | length > 0 %}
+traefik.http.routers.{{ yacy_identifier }}.middlewares={{ middlewares | join(',') }}
+{% endif %}
+traefik.http.routers.{{ yacy_identifier }}.entrypoints={{ yacy_container_labels_traefik_entrypoints }}
+traefik.http.routers.{{ yacy_identifier }}.tls={{ yacy_container_labels_traefik_tls | to_json }}
+{% if yacy_container_labels_traefik_tls %}
+traefik.http.routers.{{ yacy_identifier }}.tls.certResolver={{ yacy_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+traefik.http.services.{{ yacy_identifier }}.loadbalancer.server.port={{ yacy_container_http_port }}
+{% endif %}
+
+{{ yacy_container_labels_additional_labels }}

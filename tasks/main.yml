@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: 2023 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Perform YaCy installation tasks
+  when: yacy_enabled | bool
+  tags:
+    - setup-all
+    - setup-yacy
+    - install-all
+    - install-yacy
+  block:
+    - name: Validate YaCy configuration
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+    - name: Install YaCy
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- name: Perform tasks to set YaCy admin user password
+  when: yacy_enabled | bool
+  tags:
+    - ensure-yacy-admin-password
+  block:
+    - name: Set YaCy admin user password
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/set_admin_password.yml"
+
+- name: Perform YaCy uninstallation tasks
+  when: not yacy_enabled | bool
+  tags:
+    - setup-all
+    - setup-yacy
+  block:
+    - name: Uninstall YaCy
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
