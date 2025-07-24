@@ -12,21 +12,18 @@ SPDX-FileCopyrightText: 2023 Antonis Christofides
 SPDX-FileCopyrightText: 2023 Felix Stupp
 SPDX-FileCopyrightText: 2023 Pierre 'McFly' Marty
 SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2025 Nicola Murino
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
 # Setting up SFTPGo
 
-This is an [Ansible](https://www.ansible.com/) role which installs [SFTPGo](https://sftpgo.net) to run as a [Docker](https://www.docker.com/) container wrapped in a systemd service.
+This is an [Ansible](https://www.ansible.com/) role which installs [SFTPGo](https://github.com/drakkan/sftpgo/) to run as a [Docker](https://www.docker.com/) container wrapped in a systemd service.
 
-SFTPGo is a distributed web search engine, based on a peer-to-peer network. It provides three different modes;
+SFTPGo is a full-featured and highly configurable event-driven file transfer solution. It supports SFTP, HTTP/S, FTP/S and WebDAV, and can connect to storage backends including local filesystem, S3 (compatible) Object Storage, Google Cloud Storage, Azure Blob Storage, and other SFTP servers.
 
-- Searching a shared global index on the P2P network
-- Crawling web pages of domains you choose to create an individual index for searching
-- Setting up a search portal for your intranet behind the firewall to search pages or files on the shared file system, without sharing data with a third party
-
-See the project's [documentation](https://sftpgo.net/docs/) to learn what SFTPGo does and why it might be useful to you.
+See the project's [documentation](https://docs.sftpgo.com/latest/) to learn what SFTPGo does and why it might be useful to you.
 
 ## Prerequisites
 
