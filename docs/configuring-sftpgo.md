@@ -34,12 +34,9 @@ See the project's [documentation](https://docs.sftpgo.com/latest/) to learn what
 
 You may need to open the following ports on your server:
 
-- `8090` — port number where the server should bind to
-- `8443` — optional SSL port (HTTPS port) the server should bind to
+- `2022` — port number for SFTP service
 
 Docker automatically opens these ports in the server's firewall, so you likely don't need to do anything. If you use another firewall in front of the server, you may need to adjust it.
-
-See the upstream [documentation](https://sftpgo.net/operation/sftpgo_conf/#system) to learn more.
 
 ## Adjusting the playbook configuration
 
