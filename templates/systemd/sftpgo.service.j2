@@ -39,6 +39,9 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       {% if sftpgo_container_sftp_host_bind_port %}
       -p {{ sftpgo_container_sftp_host_bind_port }}:{{ sftpgo_container_sftp_port }} \
       {% endif %}
+      {% if sftpgo_container_webdav_host_bind_port %}
+      -p {{ sftpgo_container_webdav_host_bind_port }}:{{ sftpgo_container_webdav_port }} \
+      {% endif %}
       --env-file={{ sftpgo_base_path }}/env \
       --label-file={{ sftpgo_base_path }}/labels \
       --mount type=bind,src={{ sftpgo_data_path }},dst=/srv/sftpgo/data \

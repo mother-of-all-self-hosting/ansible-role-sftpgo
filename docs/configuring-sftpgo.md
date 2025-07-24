@@ -35,6 +35,7 @@ See the project's [documentation](https://docs.sftpgo.com/latest/) to learn what
 You may need to open the following ports on your server:
 
 - `2022` — port number for SFTP service
+- `10080` — port number for WebDAV service
 
 Docker automatically opens these ports in the server's firewall, so you likely don't need to do anything. If you use another firewall in front of the server, you may need to adjust it.
 
@@ -97,6 +98,19 @@ Replace `ADMIN_USERNAME_HERE` and `ADMIN_PASSWORD_HERE` with your own values.
 
 >[!NOTE]
 > Changing those values after creating the user does not update the login credential.
+
+### Enable WebDAV server (optional)
+
+You can enable WebDAV server by adding the following configuration to your `vars.yml` file:
+
+```yaml
+sftpgo_environment_variables_webdav_enabled: true
+```
+
+>[!NOTE]
+> By default the connection to the WebDAV server is not encrypted with HTTPS. To enable encryption, it is necessary to install a TLS certificate and its private key. See [`defaults/main.yml`](../defaults/main.yml) and [this page](https://docs.sftpgo.com/latest/config-file/#webdav-server) on the official documentation to check how it should be set up.
+
+<!-- TODO: Have Traefik (ansible-role-traefik) manage the TLS certificate and the private key. -->
 
 ### Extending the configuration
 
