@@ -180,12 +180,19 @@ sftpgo_systemd_wanted_services_list: []
 # Valid values: sqlite, mysql, postgresql, cockroachdb, bolt, memory
 sftpgo_environment_variables_data_provider_driver:
 
-# Specify settings for data provider (mysql, postgresql)
-sftpgo_database_name: sftpgo
-sftpgo_database_hostname: 127.0.0.1
-sftpgo_database_port: 5432
-sftpgo_database_username: sftpgo
-sftpgo_database_password: YOUR_PASSWORD_HERE
+# Specify settings for data provider (mysql)
+sftpgo_database_mysql_name: sftpgo
+sftpgo_database_mysql_hostname: 127.0.0.1
+sftpgo_database_mysql_port: 3306
+sftpgo_database_mysql_username: sftpgo
+sftpgo_database_mysql_password: YOUR_PASSWORD_HERE
+
+# Specify settings for data provider (postgresql)
+sftpgo_database_postgresql_name: sftpgo
+sftpgo_database_postgresql_hostname: 127.0.0.1
+sftpgo_database_postgresql_port: 5432
+sftpgo_database_postgresql_username: sftpgo
+sftpgo_database_postgresql_password: YOUR_PASSWORD_HERE
 
 # Control if the default admin account is created
 # Note that this setting has no effect if an admin account has been created.
