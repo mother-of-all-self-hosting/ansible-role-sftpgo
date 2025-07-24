@@ -189,8 +189,8 @@ sftpgo_database_password: YOUR_PASSWORD_HERE
 
 # Specify settings related to HTTP server
 # See: https://docs.sftpgo.com/latest/config-file/#http-server
-sftpgo_environment_variables_http_bindings_enable_web_admin: true
-sftpgo_environment_variables_http_bindings_enable_web_client: true
+sftpgo_environment_variables_http_bindings_enable_web_admin: false
+sftpgo_environment_variables_http_bindings_enable_web_client: false
 sftpgo_environment_variables_http_bindings_enable_rest_api: true
 
 # Specify settings related to SMTP mailer

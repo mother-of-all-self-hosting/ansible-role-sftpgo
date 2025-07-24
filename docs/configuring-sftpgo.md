@@ -73,6 +73,17 @@ sftpgo_hostname: "example.com"
 
 After adjusting the hostname, make sure to adjust your DNS records to point the domain to your server.
 
+### Enable interfaces for WebAdmin and WebClient (optional)
+
+Because the theme used in WebAdmin and WebClient user interfaces is proprietary (see [this section](https://docs.sftpgo.com/latest/#licensing) for additional information), this role disables them by default.
+
+To enable them, add the following configuration to your `vars.yml` file:
+
+```yaml
+sftpgo_environment_variables_http_bindings_enable_web_admin: true
+sftpgo_environment_variables_http_bindings_enable_web_client: true
+```
+
 ### Extending the configuration
 
 There are some additional things you may wish to configure about the component.
