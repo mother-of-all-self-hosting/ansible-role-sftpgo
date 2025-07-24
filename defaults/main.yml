@@ -195,11 +195,12 @@ sftpgo_environment_variables_data_provider_create_default_admin: false
 sftpgo_environment_variables_sftpgo_default_admin_username: ''
 sftpgo_environment_variables_sftpgo_default_admin_password: ''
 
-# Specify settings related to HTTP server
+# Specify settings related to HTTP server (for the first httpd binding)
 # See: https://docs.sftpgo.com/latest/config-file/#http-server
-sftpgo_environment_variables_http_bindings_enable_web_admin: false
-sftpgo_environment_variables_http_bindings_enable_web_client: false
-sftpgo_environment_variables_http_bindings_enable_rest_api: true
+sftpgo_environment_variables_httpd_bindings_0_enable_web_admin: false
+sftpgo_environment_variables_httpd_bindings_0_enable_web_client: false
+sftpgo_environment_variables_httpd_bindings_0_enable_rest_api: true
+sftpgo_environment_variables_httpd_bindings_0_enabled_login_methods: 0
 
 # Specify settings related to SMTP mailer
 # See: https://docs.sftpgo.com/latest/config-file/#smtp
