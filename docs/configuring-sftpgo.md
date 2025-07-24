@@ -89,10 +89,10 @@ Take a look at:
 
 - [`defaults/main.yml`](../defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `sftpgo_environment_variables_additional_variables` variable
 
-See [`sftpgo.init`](https://github.com/sftpgo/sftpgo_search_server/blob/master/defaults/sftpgo.init) for a complete list of SFTPGo's config options that you could put in `sftpgo_environment_variables_additional_variables`.
+See [this page](https://docs.sftpgo.com/latest/config-file/) for a complete list of SFTPGo's config options that you could put in `sftpgo_environment_variables_additional_variables`.
 
 >[!NOTE]
-> You can check [this section on the documentation](https://sftpgo.net/download_installation/#configuration-with-environment-variables) for the conversion rule of settings into environment variables. Note that not all settings are available as environment variables.
+> You can check [this page on the documentation](https://docs.sftpgo.com/latest/env-vars/) for the conversion rule of settings into environment variables.
 
 ## Installing
 
@@ -106,37 +106,7 @@ If you use the MASH playbook, the shortcut commands with the [`just` program](ht
 
 ## Usage
 
-After running the command for installation, SFTPGo becomes available at the specified hostname like `https://example.com`. You can connect to the SFTP server on the port `2022`.
-
-### Change admin user password
-
-**Do not forget to change the default login credential of the admin account** (username: `admin`, password: `sftpgo`). You can change it at `https://example.com/ConfigAccounts_p.html`. Alternatively, set a password of the `admin` user to the `sftpgo_conf_password` variable and run the installation command of your playbook as below:
-
-```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=ensure-sftpgo-admin-password
-```
-
->[!NOTE]
-> The password cannot be changed with the playbook's tag if SFTPGo instance is not running.
-
-### Change the search mode
-
-Since the password of the default admin account is [hardcoded](https://github.com/sftpgo/sftpgo_search_server/blob/master/docker/Dockerfile), the SFTPGo instance is set to **the intranet search mode** by default for safety, so that it does not broadcast its existence to peers before you change the login credential.
-
-After you have changed the password on the UI or by running the playbook with `ensure-sftpgo-reset-password` tag, you can change the search mode to another one such as "Community-based web search" (global index search mode on the P2P network) from the UI directly at `https://example.com/ConfigBasic.html` or by adding the following configuration to your `vars.yml` file:
-
-```yaml
-sftpgo_environment_variables_network_unit_definition: "defaults/sftpgo.network.freeworld.unit"
-```
-
->[!WARNING]
-> Search mode setting changed on the UI is temporary and reset to the mode specified on the configuration file after re-running the playbook. Set the configuration to your `vars.yml` file to make the setting persistent.
-
-### Password-protect the instance
-
-By default any page without the `_p` suffix on SFTPGo instance is accessible to anyone, whether the instance is broadcasted or not over the P2P network, while executing administrative tasks such as changing configuration requires logging in to the instance.
-
-To require authorization with a password for accessing the instance, you can set `adminAccountAllPages` to `false` at `https://example.com/ConfigProperties_p.html`. It is also possible to configure it on the "Access Rules" section at `https://example.com/ConfigAccounts_p.html`.
+After running the command for installation, SFTPGo becomes available at the specified hostname like `https://example.com`. You can connect to the SFTP server with a SFTP client on the port `2022`.
 
 ## Troubleshooting
 
