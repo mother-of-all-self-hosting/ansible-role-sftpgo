@@ -25,6 +25,9 @@ SFTPGo is a full-featured and highly configurable event-driven file transfer sol
 
 See the project's [documentation](https://docs.sftpgo.com/latest/) to learn what SFTPGo does and why it might be useful to you.
 
+>[!NOTE]
+> There are two versions of SFTPGo provided by the developer: the free (as in speech) version released under [AGPL 3.0 license](https://github.com/drakkan/sftpgo/blob/main/LICENSE) and the nonfree ["Enterprise" version](https://docs.sftpgo.com/enterprise/#enterprise-edition). This role makes it possible for you to install the former (the free version). See [this page](https://sftpgo.com/compliance.html) for the official information about licensing.
+
 ## Prerequisites
 
 ### Open ports
