@@ -202,6 +202,16 @@ sftpgo_environment_variables_httpd_bindings_0_enable_web_client: false
 sftpgo_environment_variables_httpd_bindings_0_enable_rest_api: true
 sftpgo_environment_variables_httpd_bindings_0_enabled_login_methods: 0
 
+# Specify settings related to branding (for the first httpd binding)
+sftpgo_environment_variables_httpd_bindings_0_branding_name: ''
+sftpgo_environment_variables_httpd_bindings_0_branding__short_name: ''
+sftpgo_environment_variables_httpd_bindings_0_branding_favicon_path: ''
+sftpgo_environment_variables_httpd_bindings_0_branding_logo_path: ''
+sftpgo_environment_variables_httpd_bindings_0_branding_disclaimer_name: ''
+sftpgo_environment_variables_httpd_bindings_0_branding_disclaimer_path: ''
+sftpgo_environment_variables_httpd_bindings_0_branding_default_css: ''
+sftpgo_environment_variables_httpd_bindings_0_branding_extra_css: ''
+
 # Specify settings related to SMTP mailer
 # See: https://docs.sftpgo.com/latest/config-file/#smtp
 sftpgo_environment_variables_smtp_enabled: false
