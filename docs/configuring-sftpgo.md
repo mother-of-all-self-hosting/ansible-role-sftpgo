@@ -98,7 +98,7 @@ If you use the MASH playbook, the shortcut commands with the [`just` program](ht
 
 ## Usage
 
-After running the command for installation, SFTPGo becomes available at the specified hostname like `https://example.com`.
+After running the command for installation, SFTPGo becomes available at the specified hostname like `https://example.com`. You can connect to the SFTP server on the port `2022`.
 
 ### Change admin user password
 
@@ -131,8 +131,6 @@ By default any page without the `_p` suffix on SFTPGo instance is accessible to 
 To require authorization with a password for accessing the instance, you can set `adminAccountAllPages` to `false` at `https://example.com/ConfigProperties_p.html`. It is also possible to configure it on the "Access Rules" section at `https://example.com/ConfigAccounts_p.html`.
 
 ## Troubleshooting
-
-[The official documentation](https://sftpgo.net/docs/) and [FAQ](https://sftpgo.net/faq/) are available for troubleshooting.
 
 ### Check the service's logs
 

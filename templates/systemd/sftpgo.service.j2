@@ -23,6 +23,9 @@ Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ sftpgo_identifier }} 2>/dev/null || true'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ sftpgo_identifier }} 2>/dev/null || true'
 
+{#
+  See https://docs.sftpgo.com/latest/docker/#where-to-store-data for details about how mounted directories are handled.
+#}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       --rm \
       --name={{ sftpgo_identifier }} \
@@ -33,12 +36,14 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       {% if sftpgo_container_http_host_bind_port %}
       -p {{ sftpgo_container_http_host_bind_port }}:{{ sftpgo_container_http_port }} \
       {% endif %}
-      {% if sftpgo_container_https_host_bind_port %}
-      -p {{ sftpgo_container_https_host_bind_port }}:{{ sftpgo_container_https_port }} \
+      {% if sftpgo_container_sftp_host_bind_port %}
+      -p {{ sftpgo_container_sftp_host_bind_port }}:{{ sftpgo_container_sftp_port }} \
       {% endif %}
       --env-file={{ sftpgo_base_path }}/env \
       --label-file={{ sftpgo_base_path }}/labels \
-      --mount type=bind,src={{ sftpgo_data_path }},dst=/opt/sftpgo_search_server/DATA \
+      --mount type=bind,src={{ sftpgo_data_path }},dst=/srv/sftpgo/data \
+      --mount type=bind,src={{ sftpgo_backups_path }},dst=/srv/sftpgo/backups \
+      --mount type=bind,src={{ sftpgo_home_path }},dst=/var/lib/sftpgo \
       {% for volume in sftpgo_container_additional_volumes %}
       --mount type={{ volume.type | default('bind' if '/' in volume.src else 'volume') }},src={{ volume.src }},dst={{ volume.dst }}{{ (',' + volume.options) if volume.options else '' }} \
       {% endfor %}

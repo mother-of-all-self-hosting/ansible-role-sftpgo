@@ -7,15 +7,18 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-# Project source code URL: https://github.com/sftpgo/sftpgo_search_server
+# Project source code URL: https://github.com/drakkan/sftpgo
 
 sftpgo_enabled: true
 
 sftpgo_identifier: sftpgo
 sftpgo_base_path: "/{{ sftpgo_identifier }}"
 sftpgo_data_path: "{{ sftpgo_base_path }}/data"
+sftpgo_backups_path: "{{ sftpgo_base_path }}/backups"
+sftpgo_home_path: "{{ sftpgo_base_path }}/home"
 
-sftpgo_version: latest
+# renovate: datasource=docker depName=drakkan/sftpgo
+sftpgo_version: v2.6.6
 
 sftpgo_uid: ''
 sftpgo_gid: ''
@@ -29,7 +32,7 @@ sftpgo_hostname: ''
 # This value must either be `/` or not end with a slash (e.g. `/sftpgo`).
 sftpgo_path_prefix: /
 
-sftpgo_container_image: "{{ sftpgo_container_image_registry_prefix }}sftpgo/sftpgo_search_server:{{ sftpgo_container_image_tag }}"
+sftpgo_container_image: "{{ sftpgo_container_image_registry_prefix }}drakkan/sftpgo:{{ sftpgo_container_image_tag }}"
 sftpgo_container_image_tag: "{{ sftpgo_version }}"
 sftpgo_container_image_registry_prefix: "{{ sftpgo_container_image_registry_prefix_upstream }}"
 sftpgo_container_image_registry_prefix_upstream: "{{ sftpgo_container_image_registry_prefix_upstream_default }}"
@@ -37,31 +40,29 @@ sftpgo_container_image_registry_prefix_upstream_default: docker.io/
 sftpgo_container_image_force_pull: "{{ sftpgo_container_image.endswith(':latest') }}"
 
 sftpgo_container_image_self_build: false
-sftpgo_container_image_self_build_name: "sftpgo/sftpgo_search_server:{{ sftpgo_container_image_self_build_repo_version }}"
-sftpgo_container_image_self_build_repo: "https://github.com/sftpgo/sftpgo_search_server.git"
-sftpgo_container_image_self_build_repo_version: "master"
+sftpgo_container_image_self_build_name: "drakkan/sftpgo:{{ sftpgo_container_image_self_build_repo_version }}"
+sftpgo_container_image_self_build_repo: "https://github.com/drakkan/sftpgo.git"
+sftpgo_container_image_self_build_repo_version: "{{ sftpgo_version if sftpgo_version != 'latest' else 'main' }}"
 sftpgo_container_image_self_build_src_files_path: "{{ sftpgo_base_path }}/docker-src"
-sftpgo_container_image_self_build_repo_dockerfile_dir: "{{ sftpgo_container_image_self_build_src_files_path }}/docker"
-sftpgo_container_image_self_build_repo_dockerfile: "Dockerfile"
 
-# Controls whether the container exposes its HTTP port (tcp/8090 in the container).
+# Controls whether the container exposes its HTTP port (tcp/8080 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:2586"), or empty string to not expose.
-sftpgo_container_http_host_bind_port: 8090
+sftpgo_container_http_host_bind_port: ""
 
-# Controls whether the container exposes its HTTP port (tcp/8443 in the container).
+# Controls whether the container exposes its SFTP port (tcp/2022 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:2586"), or empty string to not expose.
-sftpgo_container_https_host_bind_port: 8443
+sftpgo_container_sftp_host_bind_port: "{{ sftpgo_container_sftp_port }}"
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.
 sftpgo_container_network: "{{ sftpgo_identifier }}"
 
 # The port number in the container
-sftpgo_container_http_port: 8090
+sftpgo_container_http_port: 8080
 
 # The port number in the container
-sftpgo_container_https_port: 8443
+sftpgo_container_sftp_port: 2022
 
 # A list of additional container networks that the container would be connected to.
 # The role does not create these networks, so make sure they already exist.
@@ -174,175 +175,38 @@ sftpgo_systemd_required_services_list_custom: []
 # List of systemd services that the SFTPGo systemd service wants
 sftpgo_systemd_wanted_services_list: []
 
-# Specify the admin password
-sftpgo_conf_password: ''
+# Specify settings related to data provider
+# See: https://docs.sftpgo.com/latest/config-file/#data-provider
+# Valid values: sqlite, mysql, postgresql, cockroachdb, bolt, memory
+sftpgo_environment_variables_data_provider_driver:
 
-# Control if UPnP is enabled
-sftpgo_environment_variables_upnp_enabled: false
+# Specify settings for data provider (mysql, postgresql)
+sftpgo_database_name: sftpgo
+sftpgo_database_hostname: 127.0.0.1
+sftpgo_database_port: 5432
+sftpgo_database_username: sftpgo
+sftpgo_database_password: YOUR_PASSWORD_HERE
 
-# Specify the global HTTP Referrer policy delivered by meta tag
-# Valid values: see https://www.w3.org/TR/referrer-policy/
-sftpgo_environment_variables_referrer_meta_policy: origin-when-cross-origin
+# Specify settings related to HTTP server
+# See: https://docs.sftpgo.com/latest/config-file/#http-server
+sftpgo_environment_variables_http_bindings_enable_web_admin: true
+sftpgo_environment_variables_http_bindings_enable_web_client: true
+sftpgo_environment_variables_http_bindings_enable_rest_api: true
 
-# Specify network definition
-# See: https://sftpgo.net/operation/network-definition/
-# Valid values: defaults/sftpgo.network.freeworld.unit, defaults/sftpgo.network.webportal.unit, defaults/sftpgo.network.intranet.unit
-sftpgo_environment_variables_network_unit_definition: "defaults/sftpgo.network.intranet.unit"
-
-# Control if HTTPS is preferred for in-protocol operations when available on remote peers
-sftpgo_environment_variables_network_unit_protocol_https_preferred: true
-
-# Control if a peer can be re-started periodically
-# Valid values: off, time
-sftpgo_environment_variables_restart_process: "off"
-
-# Specify the number of hours that must pass between restarts
-sftpgo_environment_variables_restart_cycle: 20
-
-# Specify when the restart should be performed (two-digit, 24h)
-sftpgo_environment_variables_restart_hour: "03"
-
-sftpgo_environment_variables_restart_time: 0
-
-# Specify autocrawl configuration
-sftpgo_environment_variables_autocrawl: false
-sftpgo_environment_variables_autocrawl_index_text: true
-sftpgo_environment_variables_autocrawl_index_media: true
-sftpgo_environment_variables_autocrawl_ratio: 50
-sftpgo_environment_variables_autocrawl_rows: 100
-sftpgo_environment_variables_autocrawl_days: 1
-sftpgo_environment_variables_autocrawl_query: "*:*"
-sftpgo_environment_variables_autocrawl_deep_depth: 3
-sftpgo_environment_variables_autocrawl_shallow_depth: 1
-
-# Debug settings
-# See: https://sftpgo.net/operation/sftpgo_conf/#debug-flags
-sftpgo_environment_variables_debug_search_local_dht_off: false # Set to true to disable local RWI search
-sftpgo_environment_variables_debug_search_local_solr_off: false # Set to true to disable local solr search
-sftpgo_environment_variables_debug_search_remote_dht_off: false # Set to true to disable remote RWI search
-sftpgo_environment_variables_debug_search_remote_dht_testlocal: false
-sftpgo_environment_variables_debug_search_remote_solr_off: false
-sftpgo_environment_variables_debug_search_remote_solr_testlocal: false
-sftpgo_environment_variables_debug_snippets_statistics_enabled: false # Set to true to enable computation of statistics on text snippets processing
-
-# Specify maximum size of indexing queue
-sftpgo_environment_variables_indexer_slots: 100
-
-# Specify maximum size of stacker queue
-sftpgo_environment_variables_stacker_slots: 2000
-
-# Control if advanced options on main search page is displayed
-sftpgo_environment_variables_search_options: true
-
-# Control if search of the file types is available
-sftpgo_environment_variables_search_text: true
-sftpgo_environment_variables_search_image: true
-sftpgo_environment_variables_search_audio: false
-sftpgo_environment_variables_search_video: false
-sftpgo_environment_variables_search_app: false
-
-# Specify the default number of search results per page
-sftpgo_environment_variables_search_items: 10
-
-# Specify the href "target" attribute for search results
-# Valid values: _blank, _self, _parent, _top, "searchresult" (a default custom page name for search results)
-sftpgo_environment_variables_search_target: _self
-sftpgo_environment_variables_search_target_special: _self
-sftpgo_environment_variables_search_target_special_pattern: ''
-
-# Control if sftpgo_environment_variables_referrer_meta_policy value is overridden and the standard noreferrer link type to search results links is added
-sftpgo_environment_variables_search_result_noreferrer: true
-
-# Control if the favicon (when available) of the website the URL belongs to is fetched and displayed
-sftpgo_environment_variables_search_result_show_favicon: true
-
-sftpgo_environment_variables_search_result_show_keywords: false
-
-# Control if additional information for each search hit is displayed
-sftpgo_environment_variables_search_result_show_date: true
-sftpgo_environment_variables_search_result_show_size: false
-sftpgo_environment_variables_search_result_show_metadata: false
-sftpgo_environment_variables_search_result_show_parser: false
-sftpgo_environment_variables_search_result_show_citation: true
-sftpgo_environment_variables_search_result_show_pictures: false
-sftpgo_environment_variables_search_result_show_cache: true
-sftpgo_environment_variables_search_result_show_proxy: false
-sftpgo_environment_variables_search_result_show_indexbrowser: true
-sftpgo_environment_variables_search_result_show_vocabulary: false
-sftpgo_environment_variables_search_result_show_snapshots: false
-
-# Control if the raw ranking score value is displayed
-sftpgo_environment_variables_search_result_show_ranking: false
-
-# Specify maximum numbers of accesses within a given time period to the search interface for unauthenticated users and authenticated users with no extended search right
-sftpgo_environment_variables_search_public_max_access_3s: 60
-sftpgo_environment_variables_search_public_max_access_1mn: 600
-sftpgo_environment_variables_search_public_max_access_10mn: 3000
-
-# Specify maximum numbers of accesses within a given time period to the search interface in P2P mode for unauthenticated users and authenticated users with no extended search right
-sftpgo_environment_variables_search_public_max_p2p_access_3s: 1
-sftpgo_environment_variables_search_public_max_p2p_access_1mn: 6
-sftpgo_environment_variables_search_public_max_p2p_access_10mn: 60
-
-# Specify maximum numbers of accesses within a given time period to the search interface in P2P mode with browser-side JavaScript remote results resorting for unauthenticated users and authenticated users with no extended search right
-sftpgo_environment_variables_search_public_max_p2p_jsresort_access_3s: 1
-sftpgo_environment_variables_search_public_max_p2p_jsresort_access_1mn: 1
-sftpgo_environment_variables_search_public_max_p2p_jsresort_access_10mn: 10
-
-# Specify maximum number of items displayed in search navigators
-sftpgo_environment_variables_search_navigation_maxcount: 100
-
-# Specify maximum number of items displayed in the dates navigator
-sftpgo_environment_variables_search_navigation_dates_maxcount: 640
-
-# Control if the results are sorted in the browser with Javascript
-sftpgo_environment_variables_search_jsresort: false
-
-# Specify remote search details
-sftpgo_environment_variables_search_remotesearch_maxcount: 10
-sftpgo_environment_variables_search_remotesearch_maxtime: 3000
-sftpgo_environment_variables_search_remotesearch_result_store: true
-
-# Specify maximum size allowed (in bytes) for a remote document result to be stored to local index. Defaults to -1, which means no limit.
-sftpgo_environment_variables_search_remotesearch_result_store_maxsize: -1
-
-sftpgo_environment_variables_search_remotesearch_maxload_rwi: 8.0
-sftpgo_environment_variables_search_remotesearch_maxload_solr: 4.0
-
-# Control if HTTPS should be preferred to perform remote search when available on the target peer
-sftpgo_environment_variables_search_remotesearch_https_preferred: true
-
-# Specify the minimum free disk space for crawling (MiB)
-sftpgo_environment_variables_disk_free: 3000
-
-# Specify the minimum free disk space for DHT
-sftpgo_environment_variables_disk_free_hardlimit: 1000
-
-# Specify the target steady-state of minimum disk space left (MB)
-sftpgo_environment_variables_resource_disk_free_min_steadystate: 4096
-
-# Specify the undershot below the steady-state of minimum disk free as absolute size (MB)
-sftpgo_environment_variables_resource_disk_free_min_undershot: 2048
-
-# Specify the target steady-state of maximum disk space for SFTPGo (MB)
-sftpgo_environment_variables_resource_disk_used_max_steadystate: 2097152
-
-# Specify the overshot above the steady-state of disk space for SFTPGo (absolute) (MB)
-sftpgo_environment_variables_resource_disk_used_max_overshot: 4194304
-
-# Specify the headline and body on an about box on search results
-# sftpgo_environment_variables_about_headline is effective only if sftpgo_environment_variables_about_body is specified
-sftpgo_environment_variables_about_headline: ''
-sftpgo_environment_variables_about_body: ''
-
-sftpgo_environment_variables_donation_iframesource: ''
-sftpgo_environment_variables_donation_iframetarget: ''
-
-# Specify heuristic configuration
-sftpgo_environment_variables_heuristic_site: false
-sftpgo_environment_variables_heuristic_searchresults: false
-sftpgo_environment_variables_heuristic_searchresults_crawlglobal: false
-sftpgo_environment_variables_heuristic_opensearch: false
+# Specify settings related to SMTP mailer
+# See: https://docs.sftpgo.com/latest/config-file/#smtp
+sftpgo_environment_variables_smtp_enabled: false
+sftpgo_environment_variables_smtp_host: ''
+sftpgo_environment_variables_smtp_port: ''
+sftpgo_environment_variables_smtp_from: ''
+sftpgo_environment_variables_smtp_user: ''
+sftpgo_environment_variables_smtp_password: ''
+sftpgo_environment_variables_smtp_auth_type: ''
+sftpgo_environment_variables_smtp_encryption: ''
+sftpgo_environment_variables_smtp_domain: ''
+sftpgo_environment_variables_smtp_templates_path: ''
+sftpgo_environment_variables_smtp_debug: ''
 
 # Additional environment variables.
+# See: https://docs.sftpgo.com/latest/env-vars/
 sftpgo_environment_variables_additional_variables: ''

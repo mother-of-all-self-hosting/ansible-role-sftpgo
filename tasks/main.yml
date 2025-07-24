@@ -17,14 +17,6 @@
     - name: Install SFTPGo
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
 
-- name: Perform tasks to set SFTPGo admin user password
-  when: sftpgo_enabled | bool
-  tags:
-    - ensure-sftpgo-admin-password
-  block:
-    - name: Set SFTPGo admin user password
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/set_admin_password.yml"
-
 - name: Perform SFTPGo uninstallation tasks
   when: not sftpgo_enabled | bool
   tags:
