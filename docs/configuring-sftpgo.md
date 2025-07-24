@@ -81,6 +81,23 @@ sftpgo_environment_variables_http_bindings_enable_web_admin: true
 sftpgo_environment_variables_http_bindings_enable_web_client: true
 ```
 
+### Create the first admin account with environment variables (optional)
+
+To use SFTPGo, you need to create an admin account. If you enable WebAdmin and open it, you can follow the set up wizard to create the first admin account.
+
+Alternatively, you can create it by adding the following configuration to your `vars.yml` file:
+
+```yaml
+sftpgo_environment_variables_data_provider_create_default_admin: true
+sftpgo_environment_variables_sftpgo_default_admin_username: ADMIN_USERNAME_HERE
+sftpgo_environment_variables_sftpgo_default_admin_password: ADMIN_PASSWORD_HERE
+```
+
+Replace `ADMIN_USERNAME_HERE` and `ADMIN_PASSWORD_HERE` with your own values.
+
+>[!NOTE]
+> Changing those values after creating the user does not update the login credential.
+
 ### Extending the configuration
 
 There are some additional things you may wish to configure about the component.

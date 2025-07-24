@@ -187,6 +187,14 @@ sftpgo_database_port: 5432
 sftpgo_database_username: sftpgo
 sftpgo_database_password: YOUR_PASSWORD_HERE
 
+# Control if the default admin account is created
+# Note that this setting has no effect if an admin account has been created.
+sftpgo_environment_variables_data_provider_create_default_admin: false
+
+# Specify username and password of the default admin account
+sftpgo_environment_variables_sftpgo_default_admin_username: ''
+sftpgo_environment_variables_sftpgo_default_admin_password: ''
+
 # Specify settings related to HTTP server
 # See: https://docs.sftpgo.com/latest/config-file/#http-server
 sftpgo_environment_variables_http_bindings_enable_web_admin: false
