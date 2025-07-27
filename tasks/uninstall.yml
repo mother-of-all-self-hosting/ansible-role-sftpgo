@@ -32,6 +32,11 @@
         - env
         - labels
 
+    - name: Ensure SFTPGo image source files path does not exist
+      ansible.builtin.file:
+        path: "{{ sftpgo_container_image_self_build_src_files_path }}"
+        state: absent
+
     - name: Ensure SFTPGo container network does not exist via community.docker.docker_network
       when: devture_systemd_docker_base_container_network_creation_method == 'ansible-module'
       community.docker.docker_network:
