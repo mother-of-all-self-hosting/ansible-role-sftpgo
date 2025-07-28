@@ -25,11 +25,18 @@ traefik.http.middlewares.{{ sftpgo_identifier }}-strip-prefix.stripprefix.prefix
 {% set middlewares = middlewares + [sftpgo_identifier + '-strip-prefix'] %}
 {% endif %}
 
+{% if sftpgo_container_labels_traefik_additional_request_headers.keys() | length > 0 %}
+{% for name, value in sftpgo_container_labels_traefik_additional_request_headers.items() %}
+traefik.http.middlewares.{{ sftpgo_identifier }}-add-request-headers.headers.customrequestheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + [sftpgo_identifier + '-add-request-headers'] %}
+{% endif %}
+
 {% if sftpgo_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
 {% for name, value in sftpgo_container_labels_traefik_additional_response_headers.items() %}
-traefik.http.middlewares.{{ sftpgo_identifier }}-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
+traefik.http.middlewares.{{ sftpgo_identifier }}-add-response-headers.headers.customresponseheaders.{{ name }}={{ value }}
 {% endfor %}
-{% set middlewares = middlewares + [sftpgo_identifier + '-add-headers'] %}
+{% set middlewares = middlewares + [sftpgo_identifier + '-add-response-headers'] %}
 {% endif %}
 
 traefik.http.routers.{{ sftpgo_identifier }}.rule={{ sftpgo_container_labels_traefik_rule }}
