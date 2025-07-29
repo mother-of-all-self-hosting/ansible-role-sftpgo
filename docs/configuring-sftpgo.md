@@ -71,6 +71,20 @@ sftpgo_hostname: "example.com"
 
 After adjusting the hostname, make sure to adjust your DNS records to point the domain to your server.
 
+### Specify data driver
+
+You also need specify "data driver" for SFTPGo. It is possible to use a driver like Postgres and MySQL (MariaDB), as well as SQLite and CockroachDB.
+
+To use Postgres, add the following configuration to your `vars.yml` file:
+
+```yaml
+sftpgo_environment_variables_data_provider_driver: postgresql
+```
+
+Please note that it is necessary to add environment variables manually for database other than Postgres and MySQL (MariaDB).
+
+Refer to [this section](https://docs.sftpgo.com/latest/config-file/#data-provider) on the official documentation for options to be configured.
+
 ### Enable interfaces for WebAdmin and WebClient (optional)
 
 Because the theme used in WebAdmin and WebClient user interfaces is proprietary (see [this section](https://docs.sftpgo.com/latest/#licensing) for additional information), this role disables them by default.

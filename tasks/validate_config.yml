@@ -15,6 +15,7 @@
     - sftpgo_hostname
     - sftpgo_path_prefix
     - sftpgo_container_network
+    - sftpgo_environment_variables_data_provider_driver
 
 - name: Run if Traefik is enabled
   when: sftpgo_container_labels_traefik_enabled | bool
