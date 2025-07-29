@@ -122,6 +122,8 @@ Take a look at:
 
 See [this page](https://docs.sftpgo.com/latest/config-file/) for a complete list of SFTPGo's config options that you could put in `sftpgo_environment_variables_additional_variables`.
 
+For example, you can enable OpenID Connect (OIDC) for the web interfaces by adding environment variables such as `SFTPGO_HTTPD__BINDINGS__0__OIDC__CONFIG_URL=https://example.com` to it. See [this section](https://docs.sftpgo.com/latest/config-file/#http-server) for details.
+
 >[!NOTE]
 > You can check [this page on the documentation](https://docs.sftpgo.com/latest/env-vars/) for the conversion rule of settings into environment variables.
 
