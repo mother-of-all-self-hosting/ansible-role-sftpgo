@@ -20,7 +20,7 @@
 - name: Run if Traefik is enabled
   when: sftpgo_container_labels_traefik_enabled | bool
   block:
-    - name: Fail if required SFTPGo Traefik settings not defined
+    - name: Fail if Traefik settings required for SFTPGo are not defined
       ansible.builtin.fail:
         msg: >-
           You need to define a required configuration setting (`{{ item }}`).
