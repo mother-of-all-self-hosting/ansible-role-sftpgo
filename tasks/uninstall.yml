@@ -66,7 +66,7 @@
         devture_playbook_runtime_messages_list | default([])
         +
         [
-          "Note: As the local SFTPGo instance has been removed, some old data remains in `{{ sftpgo_data_path }}`. Feel free to delete it."
+          "Note: As the local SFTPGo instance has been removed, some old data remains in `" + sftpgo_data_path + "`. Feel free to delete it."
         ]
       }}
 
@@ -84,6 +84,6 @@
         devture_playbook_runtime_messages_list | default([])
         +
         [
-          "Note: As the local SFTPGo instance has been removed, some old data for the SFTPGo system user remains in `{{ sftpgo_home_path }}`. Feel free to delete it."
+          "Note: As the local SFTPGo instance has been removed, some old data for the SFTPGo system user remains in `" + sftpgo_home_path + "`. Feel free to delete it."
         ]
       }}
