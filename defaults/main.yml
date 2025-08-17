@@ -203,7 +203,7 @@ sftpgo_environment_variables_certificate_key_file: ''
 # Specify settings related to data provider
 # See: https://docs.sftpgo.com/latest/config-file/#data-provider
 # Valid values: sqlite, mysql, postgresql, cockroachdb, bolt, memory
-sftpgo_environment_variables_data_provider_driver:
+sftpgo_environment_variables_data_provider_driver: sqlite
 
 # Specify settings for data provider (mysql)
 sftpgo_database_mysql_name: sftpgo

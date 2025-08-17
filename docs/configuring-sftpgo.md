@@ -30,6 +30,10 @@ See the project's [documentation](https://docs.sftpgo.com/latest/) to learn what
 
 ## Prerequisites
 
+To run a SFTPGo instance it is necessary to prepare a database. You can use a [SQLite](https://www.sqlite.org/), [Postgres](https://www.postgresql.org/), [CockroachDB](https://www.cockroachlabs.com/), or [MySQL](https://www.mysql.com/) compatible database server. By default it is configured to use SQLite.
+
+If you are looking for an Ansible role for Postgres and MariaDB, you can check out [ansible-role-postgres](https://github.com/mother-of-all-self-hosting/ansible-role-postgres) and [ansible-role-mariadb](https://github.com/mother-of-all-self-hosting/ansible-role-mariadb), both of which are maintained by the [Mother-of-All-Self-Hosting (MASH)](https://github.com/mother-of-all-self-hosting) team.
+
 ### Open ports
 
 You may need to open the following ports on your server:
@@ -71,15 +75,17 @@ sftpgo_hostname: "example.com"
 
 After adjusting the hostname, make sure to adjust your DNS records to point the domain to your server.
 
-### Specify data driver
+### Specify data driver (optional)
 
-You also need specify "data driver" for SFTPGo. It is possible to use a driver like Postgres and MySQL (MariaDB), as well as SQLite and CockroachDB.
+You can specify a "data driver" for the database used by SFTPGo. By default it is configured to use SQLite.
 
 To use Postgres, add the following configuration to your `vars.yml` file:
 
 ```yaml
 sftpgo_environment_variables_data_provider_driver: postgresql
 ```
+
+For other settings, check variables such as `sftpgo_database_mysql_*` and `sftpgo_database_postgresql_*` on [`defaults/main.yml`](../defaults/main.yml) .
 
 Please note that it is necessary to add environment variables manually for database other than Postgres and MySQL (MariaDB).
 
