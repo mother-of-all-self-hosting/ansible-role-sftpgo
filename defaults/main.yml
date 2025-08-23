@@ -189,7 +189,10 @@ sftpgo_systemd_required_services_list_auto: []
 sftpgo_systemd_required_services_list_custom: []
 
 # List of systemd services that the SFTPGo systemd service wants
-sftpgo_systemd_wanted_services_list: []
+sftpgo_systemd_wanted_services_list: "{{ sftpgo_systemd_wanted_services_list_default + sftpgo_systemd_wanted_services_list_auto + sftpgo_systemd_wanted_services_list_custom }}"
+sftpgo_systemd_wanted_services_list_default: []
+sftpgo_systemd_wanted_services_list_auto: []
+sftpgo_systemd_wanted_services_list_custom: []
 
 # Control if WebDAV is enabled
 sftpgo_environment_variables_webdav_enabled: false
