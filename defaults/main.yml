@@ -210,17 +210,17 @@ sftpgo_environment_variables_data_provider_driver: sqlite
 
 # Specify settings for data provider (mysql)
 sftpgo_database_mysql_name: sftpgo
-sftpgo_database_mysql_hostname: 127.0.0.1
+sftpgo_database_mysql_hostname: ''
 sftpgo_database_mysql_port: 3306
 sftpgo_database_mysql_username: sftpgo
-sftpgo_database_mysql_password: YOUR_PASSWORD_HERE
+sftpgo_database_mysql_password: ''
 
 # Specify settings for data provider (postgresql)
 sftpgo_database_postgresql_name: sftpgo
-sftpgo_database_postgresql_hostname: 127.0.0.1
+sftpgo_database_postgresql_hostname: ''
 sftpgo_database_postgresql_port: 5432
 sftpgo_database_postgresql_username: sftpgo
-sftpgo_database_postgresql_password: YOUR_PASSWORD_HERE
+sftpgo_database_postgresql_password: ''
 
 # Control if the default admin account is created
 # Note that this setting has no effect if an admin account has been created.

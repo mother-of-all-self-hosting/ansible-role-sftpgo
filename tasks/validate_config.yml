@@ -1,4 +1,5 @@
-# SPDX-FileCopyrightText: 2023 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023 MASH project contributors
+# SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2025 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
@@ -15,6 +16,30 @@
     - sftpgo_hostname
     - sftpgo_path_prefix
     - sftpgo_container_network
+
+- name: Fail if SFTPGo data provider invalid
+  ansible.builtin.fail:
+    msg: >-
+      sftpgo_environment_variables_data_provider_driver must be 'sqlite', 'mysql', 'postgresql', 'cockroachdb', 'bolt', or 'memory'
+  when: "sftpgo_environment_variables_data_provider_driver not in ['sqlite', 'mysql', 'postgresql', 'cockroachdb', 'bolt', 'memory']"
+
+- name: Fail if required SFTPGo + MySQL integration settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`) when `sftpgo_environment_variables_data_provider_driver` is `mysql`
+  when: "sftpgo_environment_variables_data_provider_driver == 'mysql' and lookup('vars', item, default='') | string | length == 0"
+  with_items:
+    - sftpgo_database_mysql_hostname
+    - sftpgo_database_mysql_password
+
+- name: Fail if required SFTPGo + Postgres integration settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`) when `sftpgo_environment_variables_data_provider_driver` is `postgres`
+  when: "sftpgo_environment_variables_data_provider_driver == 'postgres' and lookup('vars', item, default='') | string | length == 0"
+  with_items:
+    - sftpgo_database_postgresql_hostname
+    - sftpgo_database_postgresql_password
 
 - name: Run if Traefik is enabled
   when: sftpgo_container_labels_traefik_enabled | bool
