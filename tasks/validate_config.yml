@@ -1,3 +1,4 @@
+# SPDX-FileCopyrightText: 2023 Julian-Samuel Gebühr
 # SPDX-FileCopyrightText: 2023 MASH project contributors
 # SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2025 Suguru Hirahara
@@ -40,6 +41,16 @@
   with_items:
     - sftpgo_database_postgresql_hostname
     - sftpgo_database_postgresql_password
+
+- name: Fail if SMTP settings are missing (and SMTP is enabled by setting host)
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`) to correctly set up email via SMTP.
+  when: "sftpgo_environment_variables_smtp_enabled | bool and lookup('vars', item, default='') | string | length == 0"
+  with_items:
+    - sftpgo_environment_variables_smtp_host
+    - sftpgo_environment_variables_smtp_port
+    - sftpgo_environment_variables_smtp_from
 
 - name: Run if Traefik is enabled
   when: sftpgo_container_labels_traefik_enabled | bool
