@@ -85,7 +85,7 @@ To use Postgres, add the following configuration to your `vars.yml` file:
 sftpgo_environment_variables_data_provider_driver: postgresql
 ```
 
-For other settings, check variables such as `sftpgo_database_mysql_*` and `sftpgo_database_postgresql_*` on [`defaults/main.yml`](../defaults/main.yml) .
+For other settings, check variables such as `sftpgo_database_mysql_*` and `sftpgo_database_postgresql_*` on [`defaults/main.yml`](../defaults/main.yml).
 
 Please note that it is necessary to add environment variables manually for database other than Postgres and MySQL (MariaDB).
 
