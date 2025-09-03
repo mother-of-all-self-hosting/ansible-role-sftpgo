@@ -52,6 +52,24 @@
       register: network_deletion_result
       changed_when: sftpgo_container_network in network_deletion_result.stdout
 
+- name: Check existence of SFTPGo local backups path
+  ansible.builtin.stat:
+    path: "{{ sftpgo_backups_path }}"
+  register: sftpgo_backups_path_stat
+
+# We just want to notify the user. Deleting data is too destructive.
+- name: Notify if SFTPGo local backups remains
+  when: sftpgo_backups_path_stat.stat.exists | bool
+  ansible.builtin.set_fact:
+    devture_playbook_runtime_messages_list: |
+      {{
+        devture_playbook_runtime_messages_list | default([])
+        +
+        [
+          "Note: As the local SFTPGo instance has been removed, backup remains in `" + sftpgo_backups_path + "`. Feel free to delete it."
+        ]
+      }}
+
 - name: Check existence of SFTPGo local data path
   ansible.builtin.stat:
     path: "{{ sftpgo_data_path }}"

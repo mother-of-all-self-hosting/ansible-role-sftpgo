@@ -13,8 +13,8 @@ sftpgo_enabled: true
 
 sftpgo_identifier: sftpgo
 sftpgo_base_path: "/{{ sftpgo_identifier }}"
-sftpgo_data_path: "{{ sftpgo_base_path }}/data"
 sftpgo_backups_path: "{{ sftpgo_base_path }}/backups"
+sftpgo_data_path: "{{ sftpgo_base_path }}/data"
 sftpgo_home_path: "{{ sftpgo_base_path }}/home"
 
 # renovate: datasource=docker depName=drakkan/sftpgo
