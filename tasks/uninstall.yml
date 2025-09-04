@@ -42,24 +42,28 @@
         cmd: "rmdir {{ sftpgo_backups_path }}"
       register: sftpgo_backups_path_deletion_result
       changed_when: sftpgo_backups_path_deletion_result.rc == 0
+      failed_when: false
 
     - name: Ensure SFTPGo local data path does not exist if empty
       ansible.builtin.command:
         cmd: "rmdir {{ sftpgo_data_path }}"
       register: sftpgo_data_path_deletion_result
       changed_when: sftpgo_data_path_deletion_result.rc == 0
+      failed_when: false
 
     - name: Ensure SFTPGo local home path does not exist if empty
       ansible.builtin.command:
         cmd: "rmdir {{ sftpgo_home_path }}"
       register: sftpgo_home_path_deletion_result
       changed_when: sftpgo_home_path_deletion_result.rc == 0
+      failed_when: false
 
     - name: Ensure SFTPGo base path does not exist if empty
       ansible.builtin.command:
         cmd: "rmdir {{ sftpgo_base_path }}"
       register: sftpgo_base_path_deletion_result
       changed_when: sftpgo_base_path_deletion_result.rc == 0
+      failed_when: false
 
     - name: Ensure SFTPGo container network does not exist via community.docker.docker_network
       when: devture_systemd_docker_base_container_network_creation_method == 'ansible-module'
