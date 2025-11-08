@@ -20,13 +20,13 @@ sftpgo_home_path: "{{ sftpgo_base_path }}/home"
 # renovate: datasource=docker depName=drakkan/sftpgo
 sftpgo_version: v2.7.0
 
-sftpgo_uid: ''
-sftpgo_gid: ''
+sftpgo_uid: ""
+sftpgo_gid: ""
 
 sftpgo_scheme: https
 
 # The hostname at which SFTPGo is served.
-sftpgo_hostname: ''
+sftpgo_hostname: ""
 
 # The path at which SFTPGo is exposed.
 # This value must either be `/` or not end with a slash (e.g. `/sftpgo`).
@@ -130,7 +130,7 @@ sftpgo_container_labels_traefik_additional_response_headers_custom: {}
 # sftpgo_container_labels_additional_labels: |
 #   my.label=1
 #   another.label="here"
-sftpgo_container_labels_additional_labels: ''
+sftpgo_container_labels_additional_labels: ""
 
 # A list of extra arguments to pass to the container (`docker run` command)
 sftpgo_container_extra_arguments: []
@@ -199,9 +199,9 @@ sftpgo_environment_variables_webdav_enabled: false
 
 # Specify settings related to WebDAV connection
 # See: https://docs.sftpgo.com/latest/config-file/#webdav-server and https://docs.sftpgo.com/2.6/tutorials/lets-encrypt-certificate/
-sftpgo_environment_variables_enable_https: ''
-sftpgo_environment_variables_certificate_file: ''
-sftpgo_environment_variables_certificate_key_file: ''
+sftpgo_environment_variables_enable_https: ""
+sftpgo_environment_variables_certificate_file: ""
+sftpgo_environment_variables_certificate_key_file: ""
 
 # Specify settings related to data provider
 # See: https://docs.sftpgo.com/latest/config-file/#data-provider
@@ -210,25 +210,25 @@ sftpgo_environment_variables_data_provider_driver: sqlite
 
 # Specify settings for data provider (mysql)
 sftpgo_database_mysql_name: sftpgo
-sftpgo_database_mysql_hostname: ''
+sftpgo_database_mysql_hostname: ""
 sftpgo_database_mysql_port: 3306
 sftpgo_database_mysql_username: sftpgo
-sftpgo_database_mysql_password: ''
+sftpgo_database_mysql_password: ""
 
 # Specify settings for data provider (postgresql)
 sftpgo_database_postgresql_name: sftpgo
-sftpgo_database_postgresql_hostname: ''
+sftpgo_database_postgresql_hostname: ""
 sftpgo_database_postgresql_port: 5432
 sftpgo_database_postgresql_username: sftpgo
-sftpgo_database_postgresql_password: ''
+sftpgo_database_postgresql_password: ""
 
 # Control if the default admin account is created
 # Note that this setting has no effect if an admin account has been created.
 sftpgo_environment_variables_data_provider_create_default_admin: false
 
 # Specify username and password of the default admin account
-sftpgo_environment_variables_sftpgo_default_admin_username: ''
-sftpgo_environment_variables_sftpgo_default_admin_password: ''
+sftpgo_environment_variables_sftpgo_default_admin_username: ""
+sftpgo_environment_variables_sftpgo_default_admin_password: ""
 
 # Specify settings related to HTTP server (for the first httpd binding)
 # See: https://docs.sftpgo.com/latest/config-file/#http-server
@@ -238,29 +238,29 @@ sftpgo_environment_variables_httpd_bindings_0_enable_rest_api: true
 sftpgo_environment_variables_httpd_bindings_0_enabled_login_methods: 0
 
 # Specify settings related to branding (for the first httpd binding)
-sftpgo_environment_variables_httpd_bindings_0_branding_name: ''
-sftpgo_environment_variables_httpd_bindings_0_branding__short_name: ''
-sftpgo_environment_variables_httpd_bindings_0_branding_favicon_path: ''
-sftpgo_environment_variables_httpd_bindings_0_branding_logo_path: ''
-sftpgo_environment_variables_httpd_bindings_0_branding_disclaimer_name: ''
-sftpgo_environment_variables_httpd_bindings_0_branding_disclaimer_path: ''
-sftpgo_environment_variables_httpd_bindings_0_branding_default_css: ''
-sftpgo_environment_variables_httpd_bindings_0_branding_extra_css: ''
+sftpgo_environment_variables_httpd_bindings_0_branding_name: ""
+sftpgo_environment_variables_httpd_bindings_0_branding__short_name: ""
+sftpgo_environment_variables_httpd_bindings_0_branding_favicon_path: ""
+sftpgo_environment_variables_httpd_bindings_0_branding_logo_path: ""
+sftpgo_environment_variables_httpd_bindings_0_branding_disclaimer_name: ""
+sftpgo_environment_variables_httpd_bindings_0_branding_disclaimer_path: ""
+sftpgo_environment_variables_httpd_bindings_0_branding_default_css: ""
+sftpgo_environment_variables_httpd_bindings_0_branding_extra_css: ""
 
 # Specify settings related to SMTP mailer
 # See: https://docs.sftpgo.com/latest/config-file/#smtp
 sftpgo_environment_variables_smtp_enabled: false
-sftpgo_environment_variables_smtp_host: ''
-sftpgo_environment_variables_smtp_port: ''
-sftpgo_environment_variables_smtp_from: ''
-sftpgo_environment_variables_smtp_user: ''
-sftpgo_environment_variables_smtp_password: ''
-sftpgo_environment_variables_smtp_auth_type: ''
-sftpgo_environment_variables_smtp_encryption: ''
-sftpgo_environment_variables_smtp_domain: ''
-sftpgo_environment_variables_smtp_templates_path: ''
-sftpgo_environment_variables_smtp_debug: ''
+sftpgo_environment_variables_smtp_host: ""
+sftpgo_environment_variables_smtp_port: ""
+sftpgo_environment_variables_smtp_from: ""
+sftpgo_environment_variables_smtp_user: ""
+sftpgo_environment_variables_smtp_password: ""
+sftpgo_environment_variables_smtp_auth_type: ""
+sftpgo_environment_variables_smtp_encryption: ""
+sftpgo_environment_variables_smtp_domain: ""
+sftpgo_environment_variables_smtp_templates_path: ""
+sftpgo_environment_variables_smtp_debug: ""
 
 # Additional environment variables.
 # See: https://docs.sftpgo.com/latest/env-vars/
-sftpgo_environment_variables_additional_variables: ''
+sftpgo_environment_variables_additional_variables: ""
