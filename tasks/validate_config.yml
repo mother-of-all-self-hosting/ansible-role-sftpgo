@@ -14,6 +14,8 @@
   when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - { "old": "sftpgo_http_header_content_permission_policy", "new": "sftpgo_http_header_permissions_policy" }
+    - { "old": "sftpgo_environment_variables_http_bindings_enable_web_admin:", "new": "sftpgo_environment_variables_httpd_bindings_0_enable_web_admin" }
+    - { "old": "sftpgo_environment_variables_http_bindings_enable_web_client:", "new": "sftpgo_environment_variables_httpd_bindings_0_enable_web_client" }
 
 - name: Fail if required SFTPGo settings not defined
   ansible.builtin.fail:

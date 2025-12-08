@@ -98,8 +98,8 @@ Because the theme used in WebAdmin and WebClient user interfaces is proprietary 
 To enable them, add the following configuration to your `vars.yml` file:
 
 ```yaml
-sftpgo_environment_variables_http_bindings_enable_web_admin: true
-sftpgo_environment_variables_http_bindings_enable_web_client: true
+sftpgo_environment_variables_httpd_bindings_0_enable_web_admin: true
+sftpgo_environment_variables_httpd_bindings_0_enable_web_client: true
 ```
 
 ### Create the first admin account with environment variables (optional)
