@@ -124,7 +124,7 @@ Replace `ADMIN_USERNAME_HERE` and `ADMIN_PASSWORD_HERE` with your own values.
 You can enable WebDAV server by adding the following configuration to your `vars.yml` file:
 
 ```yaml
-sftpgo_environment_variables_webdav_enabled: true
+sftpgo_environment_variables_webdavd_enabled: true
 ```
 
 >[!NOTE]
