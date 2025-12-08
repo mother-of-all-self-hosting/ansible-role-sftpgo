@@ -129,8 +129,8 @@ sftpgo_environment_variables_webdavd_enabled: true
 
 >[!NOTE]
 > By default the connection to the WebDAV server is not encrypted with HTTPS. To enable encryption, it is necessary to install a TLS certificate and its private key. See [`defaults/main.yml`](../defaults/main.yml) and [this page](https://docs.sftpgo.com/latest/config-file/#webdav-server) on the official documentation to check how it should be set up.
-
-<!-- TODO: Have Traefik (ansible-role-traefik) manage the TLS certificate and the private key. -->
+>
+> If you are looking for an Ansible role to specify ACME certificates retrieved by Traefik, you can check out [ansible-role-traefik-certs-dumper](https://github.com/mother-of-all-self-hosting/ansible-role-traefik-certs-dumper) maintained by the [Mother-of-All-Self-Hosting (MASH)](https://github.com/mother-of-all-self-hosting) team.
 
 ### Extending the configuration
 
