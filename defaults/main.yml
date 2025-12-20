@@ -194,20 +194,6 @@ sftpgo_systemd_wanted_services_list_default: []
 sftpgo_systemd_wanted_services_list_auto: []
 sftpgo_systemd_wanted_services_list_custom: []
 
-# Control if WebDAV is enabled
-sftpgo_environment_variables_webdavd_enabled: false
-
-# Specify settings related to WebDAV connection
-# See: https://docs.sftpgo.com/latest/config-file/#webdav-server and https://docs.sftpgo.com/2.6/tutorials/lets-encrypt-certificate/
-sftpgo_environment_variables_webdavd_enable_https: ""
-sftpgo_environment_variables_webdavd_certificate_file: ""
-sftpgo_environment_variables_webdavd_certificate_key_file: ""
-
-# Specify settings related to data provider
-# See: https://docs.sftpgo.com/latest/config-file/#data-provider
-# Valid values: bolt, cockroachdb, memory, mysql, postgresql, sqlite
-sftpgo_environment_variables_data_provider_driver: sqlite
-
 # Specify settings for data provider (mysql)
 sftpgo_database_mysql_name: sftpgo
 sftpgo_database_mysql_hostname: ""
@@ -221,6 +207,23 @@ sftpgo_database_postgresql_hostname: ""
 sftpgo_database_postgresql_port: 5432
 sftpgo_database_postgresql_username: sftpgo
 sftpgo_database_postgresql_password: ""
+
+# Specify the timezone
+sftpgo_environment_variables_tz: UTC
+
+# Control if WebDAV is enabled
+sftpgo_environment_variables_webdavd_enabled: false
+
+# Specify settings related to WebDAV connection
+# See: https://docs.sftpgo.com/latest/config-file/#webdav-server and https://docs.sftpgo.com/2.6/tutorials/lets-encrypt-certificate/
+sftpgo_environment_variables_webdavd_enable_https: ""
+sftpgo_environment_variables_webdavd_certificate_file: ""
+sftpgo_environment_variables_webdavd_certificate_key_file: ""
+
+# Specify settings related to data provider
+# See: https://docs.sftpgo.com/latest/config-file/#data-provider
+# Valid values: bolt, cockroachdb, memory, mysql, postgresql, sqlite
+sftpgo_environment_variables_data_provider_driver: sqlite
 
 # Control if the default admin account is created
 # Note that this setting has no effect if an admin account has been created.
