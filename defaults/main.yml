@@ -135,7 +135,7 @@ sftpgo_container_labels_additional_labels: "{{ sftpgo_container_labels_additiona
 sftpgo_container_labels_additional_labels_auto: {}
 sftpgo_container_labels_additional_labels_custom: {}
 
-# A list of extra arguments to pass to the container (`docker run` command)
+# A list of extra arguments to pass to the container (`docker create` command)
 sftpgo_container_extra_arguments: "{{ sftpgo_container_extra_arguments_auto + sftpgo_container_extra_arguments_custom }}"
 sftpgo_container_extra_arguments_auto: []
 sftpgo_container_extra_arguments_custom: []
