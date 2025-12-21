@@ -28,7 +28,7 @@ sftpgo_scheme: https
 # The hostname at which SFTPGo is served.
 sftpgo_hostname: ""
 
-# The path at which SFTPGo is exposed.
+# The path at which SFTPGo is served.
 # This value must either be `/` or not end with a slash (e.g. `/sftpgo`).
 sftpgo_path_prefix: /
 
