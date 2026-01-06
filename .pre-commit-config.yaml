@@ -22,10 +22,7 @@ repos:
     rev: v0.47.0
     hooks:
       - id: markdownlint
-        args: [
-          --disable=MD013, # Line length
-          --disable=MD033  # Inline HTML (for img HTML tags)
-        ]
+        args: [--disable=MD013]  # https://github.com/DavidAnson/markdownlint/blob/main/doc/md013.md
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.1
     hooks:
