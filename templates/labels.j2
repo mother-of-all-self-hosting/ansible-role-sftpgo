@@ -56,4 +56,6 @@ traefik.http.routers.{{ sftpgo_identifier }}.tls.certResolver={{ sftpgo_containe
 traefik.http.services.{{ sftpgo_identifier }}.loadbalancer.server.port={{ sftpgo_container_http_port }}
 {% endif %}
 
-{{ sftpgo_container_labels_additional_labels }}
+{% for arg in sftpgo_container_labels_additional_labels %}
+{{ arg }}
+{% endfor %}
