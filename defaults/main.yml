@@ -128,7 +128,7 @@ sftpgo_container_labels_traefik_additional_response_headers_custom: {}
 # To add your own custom labels, use `sftpgo_container_labels_additional_labels_custom`
 #
 # Example:
-# sftpgo_container_labels_additional_labels_custom: |
+# sftpgo_container_labels_additional_labels_custom:
 #   - my.label=1
 #   - another.label="here"
 sftpgo_container_labels_additional_labels: "{{ sftpgo_container_labels_additional_labels_auto + sftpgo_container_labels_additional_labels_custom }}"
