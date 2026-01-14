@@ -23,6 +23,7 @@ sftpgo_version: v2.7.0
 sftpgo_uid: ""
 sftpgo_gid: ""
 
+# The scheme used for serving SFTPGo.
 sftpgo_scheme: https
 
 # The hostname at which SFTPGo is served.
