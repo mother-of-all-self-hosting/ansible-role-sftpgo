@@ -46,6 +46,9 @@ sftpgo_container_image_self_build_repo: "https://github.com/drakkan/sftpgo.git"
 sftpgo_container_image_self_build_repo_version: "{{ sftpgo_version if sftpgo_version != 'latest' else 'main' }}"
 sftpgo_container_image_self_build_src_files_path: "{{ sftpgo_base_path }}/docker-src"
 
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+sftpgo_container_network: "{{ sftpgo_identifier }}"
+
 # Controls whether the container exposes its HTTP port (tcp/8080 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:2586"), or empty string to not expose.
@@ -60,9 +63,6 @@ sftpgo_container_sftp_host_bind_port: "{{ sftpgo_container_sftp_port }}"
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:2586"), or empty string to not expose.
 sftpgo_container_webdav_host_bind_port: "{{ sftpgo_container_webdav_port }}"
-
-# The base container network. It will be auto-created by this role if it doesn't exist already.
-sftpgo_container_network: "{{ sftpgo_identifier }}"
 
 # The port number in the container
 sftpgo_container_http_port: 8080
