@@ -76,6 +76,7 @@
           path: "{{ sftpgo_container_image_self_build_src_files_path }}"
           pull: true
           args:
+      register: sftpgo_container_image_build_result
 
 - name: Ensure SFTPGo container network is created via community.docker.docker_network
   when: devture_systemd_docker_base_container_network_creation_method == 'ansible-module'
@@ -111,4 +112,5 @@
         sftpgo_support_files_result.changed | default(false)
         or sftpgo_systemd_service_result.changed | default(false)
         or sftpgo_container_image_pull_result.changed | default(false)
+        or sftpgo_container_image_build_result.changed | default(false)
       }}
