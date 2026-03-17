@@ -234,19 +234,16 @@ sftpgo_container_cleanup_command: |
   echo "Failed to remove stale container {{ sftpgo_identifier }} after {{ sftpgo_container_cleanup_timeout_seconds }} attempts" >&2;
   exit 1
 
-# Specify settings for data provider (mysql)
-sftpgo_database_mysql_name: sftpgo
+# Specify database configuration
 sftpgo_database_mysql_hostname: ""
 sftpgo_database_mysql_port: 3306
 sftpgo_database_mysql_username: sftpgo
 sftpgo_database_mysql_password: ""
-
-# Specify settings for data provider (postgresql)
-sftpgo_database_postgresql_name: sftpgo
-sftpgo_database_postgresql_hostname: ""
-sftpgo_database_postgresql_port: 5432
-sftpgo_database_postgresql_username: sftpgo
-sftpgo_database_postgresql_password: ""
+sftpgo_database_postgres_hostname: ""
+sftpgo_database_postgres_port: 5432
+sftpgo_database_postgres_username: sftpgo
+sftpgo_database_postgres_password: ""
+sftpgo_database_name: sftpgo
 
 # Specify the timezone
 sftpgo_environment_variables_tz: UTC
@@ -262,8 +259,8 @@ sftpgo_environment_variables_webdavd_certificate_key_file: ""
 
 # Specify settings related to data provider
 # See: https://docs.sftpgo.com/latest/config-file/#data-provider
-# Valid values: bolt, cockroachdb, memory, mysql, postgresql, sqlite
-sftpgo_environment_variables_data_provider_driver: sqlite
+# Valid values: bolt, cockroachdb, memory, mysql, postgres, sqlite
+sftpgo_environment_variables_data_provider_driver: ""
 
 # Control if the default admin account is created
 # Note that this setting has no effect if an admin account has been created.

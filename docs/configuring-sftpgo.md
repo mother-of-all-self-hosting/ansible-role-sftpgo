@@ -30,7 +30,7 @@ See the project's [documentation](https://docs.sftpgo.com/latest/) to learn what
 
 ## Prerequisites
 
-To run a SFTPGo instance it is necessary to prepare a database. You can use [CockroachDB](https://www.cockroachlabs.com/), a [MySQL](https://www.mysql.com/) compatible database server, [Postgres](https://www.postgresql.org/), or [SQLite](https://www.sqlite.org/). By default it is configured to use SQLite.
+To run a SFTPGo instance it is necessary to prepare a database. You can use [CockroachDB](https://www.cockroachlabs.com/), a [MySQL](https://www.mysql.com/) compatible database server, [Postgres](https://www.postgresql.org/), or [SQLite](https://www.sqlite.org/).
 
 If you are looking for Ansible roles for a MySQL compatible server or Postgres, you can check out [ansible-role-mariadb](https://github.com/mother-of-all-self-hosting/ansible-role-mariadb) and [ansible-role-postgres](https://github.com/mother-of-all-self-hosting/ansible-role-postgres), both of which are maintained by the [Mother-of-All-Self-Hosting (MASH)](https://github.com/mother-of-all-self-hosting) team.
 
@@ -77,15 +77,15 @@ After adjusting the hostname, make sure to adjust your DNS records to point the 
 
 ### Specify data driver (optional)
 
-You can specify a "data driver" for the database used by SFTPGo. By default it is configured to use SQLite.
+You can specify a "data driver" for the database used by SFTPGo.
 
 To use Postgres, add the following configuration to your `vars.yml` file:
 
 ```yaml
-sftpgo_environment_variables_data_provider_driver: postgresql
+sftpgo_environment_variables_data_provider_driver: postgres
 ```
 
-For other settings, check variables such as `sftpgo_database_mysql_*` and `sftpgo_database_postgresql_*` on [`defaults/main.yml`](../defaults/main.yml).
+For other settings, check variables such as `sftpgo_database_mysql_*` and `sftpgo_database_postgres_*` on [`defaults/main.yml`](../defaults/main.yml).
 
 Please note that it is necessary to add environment variables manually for database other than Postgres and MySQL (MariaDB).
 
