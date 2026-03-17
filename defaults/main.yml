@@ -292,7 +292,7 @@ sftpgo_environment_variables_httpd_bindings_0_branding_extra_css: ""
 
 # Specify settings related to SMTP mailer
 # See: https://docs.sftpgo.com/latest/config-file/#smtp
-sftpgo_environment_variables_smtp_enabled: false
+sftpgo_mailer_smtp_enabled: false
 sftpgo_environment_variables_smtp_host: ""
 sftpgo_environment_variables_smtp_port: ""
 sftpgo_environment_variables_smtp_from: ""
