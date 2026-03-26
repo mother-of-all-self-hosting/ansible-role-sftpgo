@@ -243,6 +243,14 @@ sftpgo_database_postgres_hostname: ""
 sftpgo_database_postgres_port: 5432
 sftpgo_database_postgres_username: sftpgo
 sftpgo_database_postgres_password: ""
+# Specify SSL mode for MySQL database server
+# By default, we expect a local container (without SSL), so attempting SSL connections is not necessary.
+# Valid values: see https://docs.sftpgo.com/latest/config-file/#data-provider
+sftpgo_database_mysql_sslmode: "0"
+# Specify SSL mode for Postgres database server
+# By default, we expect a local container (without SSL), so attempting SSL connections is not necessary.
+# Valid values: see https://docs.sftpgo.com/latest/config-file/#data-provider
+sftpgo_database_postgres_sslmode: "0"
 sftpgo_database_name: sftpgo
 
 # Specify the timezone
