@@ -46,7 +46,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       --mount type=bind,src={{ sftpgo_data_path }},dst=/srv/sftpgo/data \
       --mount type=bind,src={{ sftpgo_backups_path }},dst=/srv/sftpgo/backups \
       --mount type=bind,src={{ sftpgo_home_path }},dst=/var/lib/sftpgo \
-      {% if sftpgo_database_postgres_socket_enabled and sftpgo_database_postgres_socket_path_host != '' %}
+      {% if sftpgo_environment_variables_data_provider_driver == 'postgres' and sftpgo_database_postgres_socket_enabled and sftpgo_database_postgres_socket_path_host != '' %}
       --mount type=bind,src={{ sftpgo_database_postgres_socket_path_host }},dst={{ sftpgo_database_postgres_socket_path_container }} \
       {% endif %}
       {% for volume in sftpgo_container_additional_volumes %}
