@@ -1,8 +1,9 @@
-# SPDX-FileCopyrightText: 2023 - 2024 Nikita Chernyi
-# SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023, 2024 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023-2026 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 Julian-Samuel Gebühr
 # SPDX-FileCopyrightText: 2024 Sergio Durigan Junior
 # SPDX-FileCopyrightText: 2025 MASH project contributors
-# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+# SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -234,6 +235,12 @@ sftpgo_container_cleanup_command: |
   echo "Failed to remove stale container {{ sftpgo_identifier }} after {{ sftpgo_container_cleanup_timeout_seconds }} attempts" >&2;
   exit 1
 
+########################################################################
+#                                                                      #
+# database                                                             #
+#                                                                      #
+########################################################################
+
 # Specify database configuration
 sftpgo_database_mysql_hostname: ""
 sftpgo_database_mysql_port: 3306
@@ -252,6 +259,24 @@ sftpgo_database_mysql_sslmode: "0"
 # Valid values: see https://docs.sftpgo.com/latest/config-file/#data-provider
 sftpgo_database_postgres_sslmode: "0"
 sftpgo_database_name: sftpgo
+
+# Control if the database connection to Postgres is made via a Unix socket
+sftpgo_database_postgres_socket_enabled: true
+
+# Specify the path to the Postgres Unix socket path inside the SFTPGo container
+sftpgo_database_postgres_socket_path_container: /run-postgres
+
+# Specify the path to the Postgres Unix socket path on the host (bind-mount source)
+sftpgo_database_postgres_socket_path_host: ""
+
+# Specify database host address or absolute path for Unix socket
+sftpgo_environment_variables_sftpgo_data_provider_host_postgres: "{{ sftpgo_database_postgres_socket_path_container if sftpgo_database_postgres_socket_enabled else sftpgo_database_postgres_hostname }}"
+
+########################################################################
+#                                                                      #
+# /database                                                            #
+#                                                                      #
+########################################################################
 
 # Specify the timezone
 sftpgo_environment_variables_tz: UTC

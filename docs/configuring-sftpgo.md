@@ -1,17 +1,20 @@
 <!--
-SPDX-FileCopyrightText: 2020 - 2024 MDAD project contributors
-SPDX-FileCopyrightText: 2020 - 2024 Slavi Pantaleev
 SPDX-FileCopyrightText: 2020 Aaron Raimist
 SPDX-FileCopyrightText: 2020 Chris van Dijk
 SPDX-FileCopyrightText: 2020 Dominik Zajac
 SPDX-FileCopyrightText: 2020 Mickaël Cornière
+SPDX-FileCopyrightText: 2020-2024 MDAD project contributors
+SPDX-FileCopyrightText: 2020-2024 Slavi Pantaleev
 SPDX-FileCopyrightText: 2022 François Darveau
 SPDX-FileCopyrightText: 2022 Julian Foad
 SPDX-FileCopyrightText: 2022 Warren Bailey
+SPDX-FileCopyrightText: 2023 Alejandro AR
 SPDX-FileCopyrightText: 2023 Antonis Christofides
 SPDX-FileCopyrightText: 2023 Felix Stupp
+SPDX-FileCopyrightText: 2023 Julian-Samuel Gebühr
 SPDX-FileCopyrightText: 2023 Pierre 'McFly' Marty
-SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Thomas Miceli
+SPDX-FileCopyrightText: 2024-2026 Suguru Hirahara
 SPDX-FileCopyrightText: 2025 Nicola Murino
 
 SPDX-License-Identifier: AGPL-3.0-or-later
@@ -90,6 +93,29 @@ For other settings, check variables such as `sftpgo_database_mysql_*` and `sftpg
 Please note that it is necessary to add environment variables manually for database other than Postgres and MySQL (MariaDB).
 
 Refer to [this section](https://docs.sftpgo.com/latest/config-file/#data-provider) on the official documentation for options to be configured.
+
+### Configuring connection to database server (optional)
+
+>[!NOTE]
+> The connection to the MySQL compatible database via the Unix socket is not yet available.
+
+By default the role is configured to establish connection with the Postgres database server via the Unix socket. You can mount the Unix socket by adding the following configuration to your `vars.yml` file:
+
+```yaml
+# Specify the path to the Postgres Unix socket path on the host (bind-mount source)
+sftpgo_database_postgres_socket_path_host: ""
+
+sftpgo_database_postgres_hostname: YOUR_POSTGRES_SERVER_HOSTNAME_HERE
+```
+
+Setting it enables to connect to the database server via Unix socket mounted in the container.
+
+If TCP connection is preferred, connection via the Unix socket can be disabled by adding the following configuration to your `vars.yml` file:
+
+```yaml
+# Disable the connection to the Postgres server via a Unix socket
+sftpgo_database_postgres_socket_enabled: false
+```
 
 ### Enable interfaces for WebAdmin and WebClient (optional)
 

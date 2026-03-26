@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2023 Julian-Samuel Gebühr
 # SPDX-FileCopyrightText: 2023 MASH project contributors
-# SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
-# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+# SPDX-FileCopyrightText: 2023-2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -56,14 +56,34 @@
     - sftpgo_database_mysql_hostname
     - sftpgo_database_mysql_password
 
-- name: Fail if required SFTPGo + Postgres integration settings not defined
-  ansible.builtin.fail:
-    msg: >-
-      You need to define a required configuration setting (`{{ item }}`) when `sftpgo_environment_variables_data_provider_driver` is `postgres`
-  when: "sftpgo_environment_variables_data_provider_driver == 'postgres' and lookup('vars', item, default='') | string | length == 0"
-  with_items:
-    - sftpgo_database_postgres_hostname
-    - sftpgo_database_postgres_password
+- name: Run if SFTPGo + Postgres integration is enabled
+  when: sftpgo_environment_variables_data_provider_driver == 'postgres'
+  block:
+    - name: Fail if required SFTPGo + Postgres integration settings not defined
+      ansible.builtin.fail:
+        msg: >-
+          You need to define a required configuration setting (`{{ item }}`) when `sftpgo_environment_variables_data_provider_driver` is `postgres`
+      when: "lookup('vars', item, default='') | string | length == 0"
+      with_items:
+        - sftpgo_database_postgres_password
+
+    - name: Fail if Postgres socket host path for SFTPGo is missing when Unix socket is enabled
+      ansible.builtin.fail:
+        msg: >-
+          You need to define `sftpgo_database_postgres_socket_path_host` when `sftpgo_environment_variables_data_provider_driver` is `postgres`
+          and `sftpgo_database_postgres_socket_enabled` is `true`.
+      when: >-
+        sftpgo_database_postgres_socket_enabled and
+        sftpgo_database_postgres_socket_path_host | string | length == 0
+
+    - name: Fail if Postgres hostname for SFTPGo is missing when Unix socket is disabled
+      ansible.builtin.fail:
+        msg: >-
+          You need to define `sftpgo_database_postgres_hostname` when `sftpgo_environment_variables_data_provider_driver` is `postgres`
+          and `sftpgo_database_postgres_socket_enabled` is `false`.
+      when: >-
+        not sftpgo_database_postgres_socket_enabled and
+        sftpgo_database_postgres_hostname | string | length == 0
 
 - name: Fail if SMTP settings are missing (and SMTP is enabled by setting host)
   ansible.builtin.fail:

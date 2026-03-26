@@ -1,7 +1,7 @@
 {#
 SPDX-FileCopyrightText: 2023 Slavi Pantaleev
 SPDX-FileCopyrightText: 2024 Nikita Chernyi
-SPDX-FileCopyrightText: 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 #}
@@ -46,6 +46,9 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       --mount type=bind,src={{ sftpgo_data_path }},dst=/srv/sftpgo/data \
       --mount type=bind,src={{ sftpgo_backups_path }},dst=/srv/sftpgo/backups \
       --mount type=bind,src={{ sftpgo_home_path }},dst=/var/lib/sftpgo \
+      {% if sftpgo_database_postgres_socket_enabled %}
+      --mount type=bind,src={{ sftpgo_database_postgres_socket_path_host }},dst={{ sftpgo_database_postgres_socket_path_container }} \
+      {% endif %}
       {% for volume in sftpgo_container_additional_volumes %}
       --mount type={{ volume.type | default('bind' if '/' in volume.src else 'volume') }},src={{ volume.src }},dst={{ volume.dst }}{{ (',' + volume.options) if volume.options | default('') else '' }} \
       {% endfor %}
