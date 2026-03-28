@@ -153,10 +153,19 @@ You can enable WebDAV server by adding the following configuration to your `vars
 sftpgo_environment_variables_webdavd_enabled: true
 ```
 
->[!NOTE]
-> By default the connection to the WebDAV server is not encrypted with HTTPS. To enable encryption, it is necessary to install a TLS certificate and its private key. See [`defaults/main.yml`](../defaults/main.yml) and [this page](https://docs.sftpgo.com/latest/config-file/#webdav-server) on the official documentation to check how it should be set up.
->
-> If you are looking for an Ansible role to specify ACME certificates retrieved by Traefik, you can check out [ansible-role-traefik-certs-dumper](https://github.com/mother-of-all-self-hosting/ansible-role-traefik-certs-dumper) maintained by the [Mother-of-All-Self-Hosting (MASH)](https://github.com/mother-of-all-self-hosting) team.
+As Traefik is enabled by default for the WebDAV server in the container, TLS connections are established / terminated by the reverse proxy, and its certificate is automatically retrieved from [Let's Encrypt](https://letsencrypt.org/) using the Traefik's certificates resolver.
+
+If you wish to use your own certificate, specify the path to both the certificate and its private key as below:
+
+```yaml
+# Specify path to TLS certificate
+# Example: /path/to/cert.pem
+sftpgo_environment_variables_webdavd_certificate_file: ""
+
+# Specify path to TLS key
+# Example: /path/to/key.pem
+sftpgo_environment_variables_webdavd_certificate_key_file: ""
+```
 
 ### Extending the configuration
 

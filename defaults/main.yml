@@ -108,6 +108,27 @@ sftpgo_container_labels_traefik_entrypoints: web-secure
 sftpgo_container_labels_traefik_tls: "{{ sftpgo_container_labels_traefik_entrypoints != 'web' }}"
 sftpgo_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
+# sftpgo_container_labels_traefik_sftp_enabled controls whether labels to assist a Traefik reverse-proxy for SFTP server will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `sftpgo_container_labels_additional_labels_custom`.
+sftpgo_container_labels_traefik_sftp_enabled: true
+sftpgo_container_labels_traefik_sftp_rule: "HostSNI(`*`)"
+sftpgo_container_labels_traefik_sftp_priority: 0
+sftpgo_container_labels_traefik_sftp_entrypoints: sftp-sftpgo
+
+# sftpgo_container_labels_traefik_webdav_enabled controls whether labels to assist a Traefik reverse-proxy for WebDAV server will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `sftpgo_container_labels_additional_labels_custom`.
+sftpgo_container_labels_traefik_webdav_enabled: true
+sftpgo_container_labels_traefik_webdav_hostname: "{{ sftpgo_hostname }}"
+sftpgo_container_labels_traefik_webdav_rule: "Host(`{{ sftpgo_container_labels_traefik_webdav_hostname }}`)"
+sftpgo_container_labels_traefik_webdav_priority: 0
+sftpgo_container_labels_traefik_webdav_entrypoints: webdav-secure-sftpgo
+sftpgo_container_labels_traefik_webdav_tls: "{{ sftpgo_container_labels_traefik_sftp_entrypoints != 'webdav-sftpgo' }}"
+sftpgo_container_labels_traefik_webdav_tls_certResolver: default  # noqa var-naming
+
 # Controls which additional headers to attach to all HTTP requests.
 # To add your own custom request headers, use `sftpgo_container_labels_traefik_additional_request_headers_custom`
 sftpgo_container_labels_traefik_additional_request_headers: "{{ sftpgo_container_labels_traefik_additional_request_headers_auto | combine(sftpgo_container_labels_traefik_additional_request_headers_custom) }}"

@@ -56,6 +56,34 @@ traefik.http.routers.{{ sftpgo_identifier }}.tls.certResolver={{ sftpgo_containe
 traefik.http.services.{{ sftpgo_identifier }}.loadbalancer.server.port={{ sftpgo_container_http_port }}
 {% endif %}
 
+{% if sftpgo_container_labels_traefik_sftp_enabled %}
+
+traefik.tcp.routers.{{ sftpgo_identifier }}-sftp.rule={{ sftpgo_container_labels_traefik_sftp_rule }}
+{% if sftpgo_container_labels_traefik_sftp_priority | int > 0 %}
+traefik.tcp.routers.{{ sftpgo_identifier }}-sftp.priority={{ sftpgo_container_labels_traefik_sftp_priority }}
+{% endif %}
+traefik.tcp.routers.{{ sftpgo_identifier }}-sftp.service={{ sftpgo_identifier }}-sftp
+traefik.tcp.routers.{{ sftpgo_identifier }}-sftp.entrypoints={{ sftpgo_container_labels_traefik_sftp_entrypoints }}
+
+traefik.tcp.services.{{ sftpgo_identifier }}-sftp.loadbalancer.server.port={{ sftpgo_container_sftp_port }}
+{% endif %}
+
+{% if sftpgo_container_labels_traefik_webdav_enabled %}
+
+traefik.http.routers.{{ sftpgo_identifier }}-webdav.rule={{ sftpgo_container_labels_traefik_webdav_rule }}
+{% if sftpgo_container_labels_traefik_webdav_priority | int > 0 %}
+traefik.http.routers.{{ sftpgo_identifier }}-webdav.priority={{ sftpgo_container_labels_traefik_webdav_priority }}
+{% endif %}
+traefik.http.routers.{{ sftpgo_identifier }}-webdav.service={{ sftpgo_identifier }}-webdav
+traefik.http.routers.{{ sftpgo_identifier }}-webdav.entrypoints={{ sftpgo_container_labels_traefik_webdav_entrypoints }}
+traefik.http.routers.{{ sftpgo_identifier }}-webdav.tls={{ sftpgo_container_labels_traefik_webdav_tls | to_json }}
+{% if sftpgo_container_labels_traefik_webdav_tls %}
+traefik.http.routers.{{ sftpgo_identifier }}-webdav.tls.certResolver={{ sftpgo_container_labels_traefik_webdav_tls_certResolver }}
+{% endif %}
+
+traefik.http.services.{{ sftpgo_identifier }}-webdav.loadbalancer.server.port={{ sftpgo_container_webdav_port }}
+{% endif %}
+
 {% for arg in sftpgo_container_labels_additional_labels %}
 {{ arg }}
 {% endfor %}
