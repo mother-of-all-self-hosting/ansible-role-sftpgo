@@ -94,7 +94,7 @@ Please note that it is necessary to add environment variables manually for datab
 
 Refer to [this section](https://docs.sftpgo.com/latest/config-file/#data-provider) on the official documentation for options to be configured.
 
-### Configuring connection to database server (optional)
+### Configuring connection to the database server (optional)
 
 >[!NOTE]
 > The connection to the MySQL compatible database via the Unix socket is not yet available.
