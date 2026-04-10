@@ -1,6 +1,7 @@
 {#
+SPDX-FileCopyrightText: 2023 Julian-Samuel Gebühr
 SPDX-FileCopyrightText: 2023 Slavi Pantaleev
-SPDX-FileCopyrightText: 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 #}
@@ -54,6 +55,52 @@ traefik.http.routers.{{ sftpgo_identifier }}.tls.certResolver={{ sftpgo_containe
 {% endif %}
 
 traefik.http.services.{{ sftpgo_identifier }}.loadbalancer.server.port={{ sftpgo_container_http_port }}
+
+{% if sftpgo_container_labels_traefik_metrics_enabled %}
+########################################################################
+#                                                                      #
+# Metrics                                                              #
+#                                                                      #
+########################################################################
+
+{% set middlewares = sftpgo_container_labels_traefik_metrics_middlewares %}
+
+{% if sftpgo_container_labels_traefik_metrics_middleware_basic_auth_enabled %}
+traefik.http.middlewares.{{ sftpgo_identifier }}-metrics-basic-auth.basicauth.users={{ sftpgo_container_labels_traefik_metrics_middleware_basic_auth_users }}
+{% set middlewares = middlewares + [sftpgo_identifier + '-metrics-basic-auth'] %}
+{% endif %}
+
+traefik.http.middlewares.{{ sftpgo_identifier }}-metrics-replace-path.replacepath.path=/metrics
+{% set middlewares = middlewares + [sftpgo_identifier + '-metrics-replace-path'] %}
+
+traefik.http.routers.{{ sftpgo_identifier }}-metrics.rule={{ sftpgo_container_labels_traefik_metrics_rule }}
+
+{% if sftpgo_container_labels_traefik_metrics_priority | int > 0 %}
+traefik.http.routers.{{ sftpgo_identifier }}-metrics.priority={{ sftpgo_container_labels_traefik_metrics_priority }}
+{% endif %}
+
+traefik.http.routers.{{ sftpgo_identifier }}-metrics.service={{ sftpgo_identifier }}-metrics
+
+{% if middlewares | length > 0 %}
+traefik.http.routers.{{ sftpgo_identifier }}-metrics.middlewares={{ middlewares | join(',') }}
+{% endif %}
+
+traefik.http.routers.{{ sftpgo_identifier }}-metrics.entrypoints={{ sftpgo_container_labels_traefik_metrics_entrypoints }}
+
+traefik.http.routers.{{ sftpgo_identifier }}-metrics.tls={{ sftpgo_container_labels_traefik_metrics_tls | to_json }}
+{% if sftpgo_container_labels_traefik_metrics_tls %}
+traefik.http.routers.{{ sftpgo_identifier }}-metrics.tls.certResolver={{ sftpgo_container_labels_traefik_metrics_tls_certResolver }}
+{% endif %}
+
+traefik.http.services.{{ sftpgo_identifier }}-metrics.loadbalancer.server.port={{ sftpgo_container_metrics_port }}
+
+########################################################################
+#                                                                      #
+# /Metrics                                                             #
+#                                                                      #
+########################################################################
+{% endif %}
+
 {% endif %}
 
 {% if sftpgo_container_labels_traefik_sftp_enabled %}

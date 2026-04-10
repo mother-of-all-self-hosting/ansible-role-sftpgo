@@ -167,6 +167,12 @@ sftpgo_environment_variables_webdavd_certificate_file: ""
 sftpgo_environment_variables_webdavd_certificate_key_file: ""
 ```
 
+### Integrating with Prometheus (optional)
+
+SFTPGo can natively expose metrics to Prometheus.
+
+If you are looking for an integration, you can check out the MASH playbook. See [this section of the documentation on the playbook](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/services/sftpgo.md#integrating-with-prometheus-optional) for more information.
+
 ### Extending the configuration
 
 There are some additional things you may wish to configure about the service.

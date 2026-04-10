@@ -1,8 +1,8 @@
+# SPDX-FileCopyrightText: 2023, 2024 Julian-Samuel Gebühr
 # SPDX-FileCopyrightText: 2023, 2024 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023, 2025 MASH project contributors
 # SPDX-FileCopyrightText: 2023-2026 Slavi Pantaleev
-# SPDX-FileCopyrightText: 2024 Julian-Samuel Gebühr
 # SPDX-FileCopyrightText: 2024 Sergio Durigan Junior
-# SPDX-FileCopyrightText: 2025 MASH project contributors
 # SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
@@ -58,6 +58,11 @@ sftpgo_container_network_deletion_enabled: true
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:2586"), or empty string to not expose.
 sftpgo_container_http_host_bind_port: ""
 
+# Specify how the metrics container publishes its HTTP port (as defined by `sftpgo_container_metrics_port`).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:2586"), or empty string to not expose.
+sftpgo_container_metrics_host_bind_port: ""
+
 # Specify how the container publishes its SFTP port (as defined by `sftpgo_container_sftp_port`).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:2586"), or empty string to not expose.
@@ -70,6 +75,9 @@ sftpgo_container_webdav_host_bind_port: "{{ sftpgo_container_webdav_port }}"
 
 # The port number in the container
 sftpgo_container_http_port: 8080
+
+# The port number of the metrics server in the container
+sftpgo_container_metrics_port: "{{ sftpgo_environment_variables_telemetry_bind_port }}"
 
 # The port number in the container
 sftpgo_container_sftp_port: 2022
@@ -107,6 +115,21 @@ sftpgo_container_labels_traefik_priority: 0
 sftpgo_container_labels_traefik_entrypoints: web-secure
 sftpgo_container_labels_traefik_tls: "{{ sftpgo_container_labels_traefik_entrypoints != 'web' }}"
 sftpgo_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls if labels are added to expose the Prometheus metrics publicly.
+sftpgo_container_labels_traefik_metrics_enabled: "{{ sftpgo_metrics_enabled }}"
+sftpgo_container_labels_traefik_metrics_hostname: "{{ sftpgo_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/metrics`).
+sftpgo_container_labels_traefik_metrics_path_prefix: /metrics
+sftpgo_container_labels_traefik_metrics_rule: "Host(`{{ sftpgo_container_labels_traefik_metrics_hostname }}`){% if sftpgo_container_labels_traefik_metrics_path_prefix != '/' %} && PathPrefix(`{{ sftpgo_container_labels_traefik_metrics_path_prefix }}`){% endif %}"
+sftpgo_container_labels_traefik_metrics_priority: 0
+sftpgo_container_labels_traefik_metrics_entrypoints: "{{ sftpgo_container_labels_traefik_entrypoints }}"
+sftpgo_container_labels_traefik_metrics_middlewares: []
+sftpgo_container_labels_traefik_metrics_tls: "{{ sftpgo_container_labels_traefik_metrics_entrypoints != 'web' }}"
+sftpgo_container_labels_traefik_metrics_tls_certResolver: "{{ sftpgo_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+sftpgo_container_labels_traefik_metrics_middleware_basic_auth_enabled: false
+# See: https://doc.traefik.io/traefik/reference/routing-configuration/http/middlewares/basicauth/
+sftpgo_container_labels_traefik_metrics_middleware_basic_auth_users: ""
 
 # sftpgo_container_labels_traefik_sftp_enabled controls whether labels to assist a Traefik reverse-proxy for SFTP server will be attached to the container.
 # See `../templates/labels.j2` for details.
@@ -340,6 +363,12 @@ sftpgo_environment_variables_httpd_bindings_0_branding_disclaimer_name: ""
 sftpgo_environment_variables_httpd_bindings_0_branding_disclaimer_path: ""
 sftpgo_environment_variables_httpd_bindings_0_branding_default_css: ""
 sftpgo_environment_variables_httpd_bindings_0_branding_extra_css: ""
+
+# Control if telemetry is available
+sftpgo_metrics_enabled: false
+# See: https://docs.sftpgo.com/latest/config-file/#telemetry
+sftpgo_environment_variables_telemetry_bind_port: 8081
+sftpgo_environment_variables_telemetry_bind_address: "0.0.0.0"
 
 # Specify settings related to SMTP mailer
 # See: https://docs.sftpgo.com/latest/config-file/#smtp
