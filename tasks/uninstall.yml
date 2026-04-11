@@ -90,7 +90,7 @@
   register: sftpgo_backups_path_stat
 
 # We just want to notify the user. Deleting data is too destructive.
-- name: Notify if SFTPGo local backups remains
+- name: Inject the message about the remaining SFTPGo local backups path
   when: sftpgo_backups_path_stat.stat.exists | bool
   ansible.builtin.set_fact:
     devture_playbook_runtime_messages_list: |
@@ -108,7 +108,7 @@
   register: sftpgo_data_path_stat
 
 # We just want to notify the user. Deleting data is too destructive.
-- name: Notify if SFTPGo local data remains
+- name: Inject the message about the remaining SFTPGo local data path
   when: sftpgo_data_path_stat.stat.exists | bool
   ansible.builtin.set_fact:
     devture_playbook_runtime_messages_list: |
@@ -126,7 +126,7 @@
   register: sftpgo_home_path_stat
 
 # We just want to notify the user. Deleting data is too destructive.
-- name: Notify if SFTPGo home path remains
+- name: Inject the message about the remaining SFTPGo home path
   when: sftpgo_home_path_stat.stat.exists | bool
   ansible.builtin.set_fact:
     devture_playbook_runtime_messages_list: |
