@@ -115,6 +115,9 @@ sftpgo_container_labels_traefik_priority: 0
 sftpgo_container_labels_traefik_entrypoints: web-secure
 sftpgo_container_labels_traefik_tls: "{{ sftpgo_container_labels_traefik_entrypoints != 'web' }}"
 sftpgo_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+sftpgo_container_labels_traefik_middleware_basic_auth_enabled: false
+# See: https://doc.traefik.io/traefik/reference/routing-configuration/http/middlewares/basicauth/
+sftpgo_container_labels_traefik_middleware_basic_auth_users: ""
 
 # Controls if labels are added to expose the Prometheus metrics publicly.
 sftpgo_container_labels_traefik_metrics_enabled: "{{ sftpgo_metrics_enabled }}"
