@@ -27,6 +27,7 @@
     - { "old": "sftpgo_environment_variables_certificate_key_file", "new": "sftpgo_environment_variables_webdavd_certificate_key_file" }
     - { "old": "sftpgo_environment_variables_http_bindings_enable_web_admin:", "new": "sftpgo_environment_variables_httpd_bindings_0_enable_web_admin" }
     - { "old": "sftpgo_environment_variables_http_bindings_enable_web_client:", "new": "sftpgo_environment_variables_httpd_bindings_0_enable_web_client" }
+    - { "old": "sftpgo_container_image_force_pull", "new": "<removed> (the new community.docker.docker_image_pull module handles this natively)" }
 
 - name: Fail if required SFTPGo settings not defined
   ansible.builtin.fail:

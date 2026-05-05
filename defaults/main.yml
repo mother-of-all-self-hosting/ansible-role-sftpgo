@@ -39,7 +39,6 @@ sftpgo_container_image_tag: "{{ sftpgo_version }}"
 sftpgo_container_image_registry_prefix: "{{ sftpgo_container_image_registry_prefix_upstream }}"
 sftpgo_container_image_registry_prefix_upstream: "{{ sftpgo_container_image_registry_prefix_upstream_default }}"
 sftpgo_container_image_registry_prefix_upstream_default: docker.io/
-sftpgo_container_image_force_pull: "{{ sftpgo_container_image.endswith(':latest') }}"
 
 sftpgo_container_image_self_build: false
 sftpgo_container_image_self_build_name: "drakkan/sftpgo:{{ sftpgo_container_image_self_build_repo_version }}"
