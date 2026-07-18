@@ -1,0 +1,53 @@
+# SPDX-FileCopyrightText: 2026 Suguru Hirahara
+# SPDX-FileCopyrightText: 2026 spatterlight
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Verify SFTPGo systemd service
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Wait for SFTPGo service to become active (up to 180s)
+      ansible.builtin.systemd:
+        name: sftpgo.service
+      register: sftpgo_service
+      until: sftpgo_service.status.ActiveState == 'active'
+      retries: 36
+      delay: 5
+
+    - name: Assert SFTPGo service is active
+      ansible.builtin.assert:
+        that: sftpgo_service.status.ActiveState == 'active'
+        fail_msg: "sftpgo.service not active ({{ sftpgo_service.status.ActiveState }})"
+        success_msg: "sftpgo.service is active"
+
+    - name: Retrieve SFTPGo service log for debugging
+      when: sftpgo_debug_service_enabled | bool
+      ansible.builtin.command:
+        cmd: journalctl -xeu sftpgo.service
+      changed_when: false
+
+    - name: Wait for SFTPGo HTTP endpoint to respond (up to 10m)
+      ansible.builtin.uri:
+        url: "http://localhost:8080/"
+        method: GET
+        status_code: [200, 302]
+        follow_redirects: none
+      register: sftpgo_endpoint
+      until: sftpgo_endpoint.status in [200, 302]
+      retries: 120
+      delay: 5
+
+    - name: Assert SFTPGo HTTP endpoint responds
+      ansible.builtin.assert:
+        that: sftpgo_endpoint.status in [200, 302]
+        fail_msg: "SFTPGo did not respond as expected ({{ sftpgo_endpoint.status | default('no response') }})"
+        success_msg: "SFTPGo responded with {{ sftpgo_endpoint.status }}"
+
+    - name: Show SFTPGo systemd service status summary
+      ansible.builtin.debug:
+        msg:
+          - "SFTPGo systemd: {{ sftpgo_service.status.ActiveState }}"
+          - "SFTPGo HTTP: {{ sftpgo_endpoint.status }}"
