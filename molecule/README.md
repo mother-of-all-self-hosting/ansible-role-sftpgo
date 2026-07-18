@@ -49,6 +49,10 @@ Currently these testing scenarios are available:
 
 Tests a standard SFTPGo installation.
 
+### `mariadb`
+
+Tests a standard SFTPGo installation with the MariaDB database.
+
 ### `postgres`
 
 Tests a standard SFTPGo installation with the Postgres database.
