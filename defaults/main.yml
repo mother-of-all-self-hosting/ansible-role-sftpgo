@@ -19,7 +19,7 @@ sftpgo_data_path: "{{ sftpgo_base_path }}/data"
 sftpgo_home_path: "{{ sftpgo_base_path }}/home"
 
 # renovate: datasource=docker depName=drakkan/sftpgo
-sftpgo_version: v2.7.4
+sftpgo_version: v2.7.5
 
 sftpgo_uid: ""
 sftpgo_gid: ""
