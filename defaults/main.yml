@@ -299,24 +299,45 @@ sftpgo_database_postgres_password: ""
 # Specify SSL mode for MySQL database server
 # By default, we expect a local container (without SSL), so attempting SSL connections is not necessary.
 # Valid values: see https://docs.sftpgo.com/latest/config-file/#data-provider
-sftpgo_database_mysql_sslmode: "0"
+sftpgo_database_mysql_sslmode: 0
 # Specify SSL mode for Postgres database server
 # By default, we expect a local container (without SSL), so attempting SSL connections is not necessary.
 # Valid values: see https://docs.sftpgo.com/latest/config-file/#data-provider
-sftpgo_database_postgres_sslmode: "0"
+sftpgo_database_postgres_sslmode: disable
 sftpgo_database_name: sftpgo
 
-# Control if the database connection to Postgres is made via a Unix socket
-sftpgo_database_postgres_socket_enabled: true
+# Control if the connection to MySQL is made via a Unix socket
+sftpgo_database_mysql_socket_enabled: true
 
-# Specify the path to the Postgres Unix socket path inside the SFTPGo container
-sftpgo_database_postgres_socket_path_container: /run-postgres
+# Specify the path to the MySQL Unix socket path on the host (bind-mount source)
+sftpgo_database_mysql_socket_path_host: ""
+
+# Specify the path to the MySQL Unix socket path inside the SFTPGo container
+sftpgo_database_mysql_socket_path_container: /run-mysqld
+
+# Control if the connection to Postgres is made via a Unix socket
+sftpgo_database_postgres_socket_enabled: true
 
 # Specify the path to the Postgres Unix socket path on the host (bind-mount source)
 sftpgo_database_postgres_socket_path_host: ""
 
-# Specify database host address or absolute path for Unix socket
-sftpgo_environment_variables_sftpgo_data_provider_host_postgres: "{{ sftpgo_database_postgres_socket_path_container if sftpgo_database_postgres_socket_enabled else sftpgo_database_postgres_hostname }}"
+# Specify the path to the Postgres Unix socket path inside the SFTPGo container
+sftpgo_database_postgres_socket_path_container: /run-postgres
+
+sftpgo_environment_variables_data_provider_connection_string_mysql: |-
+  {%- if sftpgo_database_mysql_socket_enabled -%}
+  {{ sftpgo_database_mysql_username }}:{{ sftpgo_database_mysql_password }}@unix({{ sftpgo_database_mysql_socket_path_container + '/mysqld.sock' }})/{{ sftpgo_database_name }}?collation=utf8mb4_unicode_ci&interpolateParams=true&timeout=10s&parseTime=true&clientFoundRows=true&tls={{ sftpgo_database_mysql_sslmode }}&writeTimeout=60s&readTimeout=60s
+  {%- else -%}
+  {{ sftpgo_database_mysql_username }}:{{ sftpgo_database_mysql_password }}@tcp({{ sftpgo_database_mysql_hostname }}:{{ sftpgo_database_mysql_port }})/{{ sftpgo_database_name }}?collation=utf8mb4_unicode_ci&interpolateParams=true&timeout=10s&parseTime=true&clientFoundRows=true&tls={{ sftpgo_database_mysql_sslmode }}&writeTimeout=60s&readTimeout=60s
+  {%- endif -%}
+
+sftpgo_environment_variables_data_provider_connection_string_postgres: |-
+  postgres://{{ sftpgo_database_postgres_username }}:{{ sftpgo_database_postgres_password }}@
+  {%- if sftpgo_database_postgres_socket_enabled -%}
+  localhost/{{ sftpgo_database_name }}?host={{ sftpgo_database_postgres_socket_path_container }}
+  {%- else -%}
+  {{ sftpgo_database_postgres_hostname }}:{{ sftpgo_database_postgres_port }}/{{ sftpgo_database_name }}?sslmode={{ sftpgo_database_postgres_sslmode }}
+  {%- endif -%}
 
 ########################################################################
 #                                                                      #
