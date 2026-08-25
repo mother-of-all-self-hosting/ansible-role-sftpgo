@@ -1,5 +1,6 @@
-# SPDX-FileCopyrightText: 2026 spatterlight
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2026 Suguru Hirahara
+# SPDX-FileCopyrightText: 2026 spatterlight
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -15,9 +16,13 @@
         cache_valid_time: 600
       when: ansible_facts["os_family"] == 'Debian'
 
+    # `openssh-client` is what lets verify.yml talk SFTP to the deployed
+    # instance. The geerlingguy images carry python3 but neither an SSH client
+    # nor curl, and no Python SSH library is installed either.
     - name: Ensure required packages are installed for SFTPGo Molecule tests preparation
       ansible.builtin.package:
         name:
+          - openssh-client
           - python3-requests
         state: present
 

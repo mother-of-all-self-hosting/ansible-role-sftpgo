@@ -1,5 +1,6 @@
-# SPDX-FileCopyrightText: 2026 spatterlight
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2026 Suguru Hirahara
+# SPDX-FileCopyrightText: 2026 spatterlight
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -37,10 +38,37 @@ provisioner:
         sftpgo_scheme: http
         sftpgo_hostname: localhost
         sftpgo_container_labels_traefik_enabled: false
-        sftpgo_container_http_host_bind_port: 8080
-        sftpgo_environment_variables_data_provider_driver: mysql
+
+        # Unlike the `default` scenario, this one opts into the web interfaces
+        # the role leaves off, which is the other HTTP surface an operator can
+        # end up with. verify.yml then checks the thing that actually matters
+        # about it: that `/web/admin/setup` - the wizard which hands admin
+        # rights to whoever reaches it first - is closed because the role
+        # already bootstrapped an admin.
         sftpgo_environment_variables_httpd_bindings_0_enable_web_admin: true
         sftpgo_environment_variables_httpd_bindings_0_enable_web_client: true
+
+        # WebDAV is off in the role's defaults, so having it answer here proves
+        # this switch reaches the process rather than the image's own default.
+        sftpgo_environment_variables_webdavd_enabled: true
+
+        sftpgo_environment_variables_data_provider_driver: mysql
+
+        # Ports deliberately unlike SFTPGo's own fallbacks (8080 for HTTP, 2022
+        # for SFTP, 10080 for WebDAV) and unlike the other scenarios', so that
+        # nothing here can pass against a default-configured instance.
+        sftpgo_container_http_port: 8091
+        sftpgo_container_http_host_bind_port: 8091
+        sftpgo_container_sftp_port: 2091
+        sftpgo_container_webdav_port: 10091
+        # Traefik terminates SFTP and WebDAV in a real deployment, so the role
+        # only publishes those ports when their labels are off.
+        sftpgo_container_labels_traefik_sftp_enabled: false
+        sftpgo_container_labels_traefik_webdav_enabled: false
+
+        sftpgo_environment_variables_data_provider_create_default_admin: true
+        sftpgo_environment_variables_sftpgo_default_admin_username: molecule-admin
+        sftpgo_environment_variables_sftpgo_default_admin_password: molecule-admin-password-mariadb
 
         # Variables required for SFTPGo to connect to the MariaDB database (via Unix socket)
         sftpgo_database_mysql_username: my_database_username
@@ -54,6 +82,12 @@ provisioner:
           }}
 
         # Variables for MariaDB
+        # `mariadb_identifier` and `mariadb_root_password` merely repeat what
+        # this scenario would get anyway. They are spelled out because
+        # verify.yml queries the database directly to prove SFTPGo's records
+        # went there, and another role's variables are not in scope in a
+        # verifier playbook.
+        mariadb_identifier: mariadb
         mariadb_uid: 1000
         mariadb_gid: 1000
         mariadb_root_password: mariadb_password

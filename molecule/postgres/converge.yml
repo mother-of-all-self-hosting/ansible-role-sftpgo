@@ -1,5 +1,6 @@
-# SPDX-FileCopyrightText: 2026 spatterlight
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2026 Suguru Hirahara
+# SPDX-FileCopyrightText: 2026 spatterlight
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -20,6 +21,26 @@
         - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
       loop_control:
         loop_var: role_name
+
+    # verify.yml runs as a separate playbook, where the role's variables are no
+    # longer in scope. Reading defaults/main.yml there works for leaf literals
+    # but not for the values built out of them through Jinja, so hand those
+    # over already resolved - by the role's own variable precedence, which is
+    # exactly what the systemd unit was rendered from.
+    - name: Record the values the role resolved, for verify.yml
+      ansible.builtin.copy:
+        content: "{{ sftpgo_molecule_resolved | to_nice_json }}"
+        dest: /root/sftpgo-molecule-resolved.json
+        mode: "0600"
+      vars:
+        sftpgo_molecule_resolved:
+          identifier: "{{ sftpgo_identifier }}"
+          container_image: "{{ sftpgo_container_image }}"
+          data_path: "{{ sftpgo_data_path }}"
+          home_path: "{{ sftpgo_home_path }}"
+          base_path: "{{ sftpgo_base_path }}"
+          database_connection_string: "{{ sftpgo_environment_variables_data_provider_connection_string_postgres }}"
+          database_socket_path_container: "{{ sftpgo_database_postgres_socket_path_container }}"
 
 - name: Ensure services are started
   hosts: all

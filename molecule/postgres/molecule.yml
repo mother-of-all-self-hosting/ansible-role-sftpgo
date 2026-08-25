@@ -1,5 +1,6 @@
-# SPDX-FileCopyrightText: 2026 spatterlight
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2026 Suguru Hirahara
+# SPDX-FileCopyrightText: 2026 spatterlight
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -37,10 +38,35 @@ provisioner:
         sftpgo_scheme: http
         sftpgo_hostname: localhost
         sftpgo_container_labels_traefik_enabled: false
-        sftpgo_container_http_host_bind_port: 8080
-        sftpgo_environment_variables_data_provider_driver: postgres
-        sftpgo_environment_variables_httpd_bindings_0_enable_web_admin: true
+
+        # A third HTTP surface, distinct from the other two scenarios': the web
+        # client for end users, without the administrative interface. verify.yml
+        # asserts that `/web/admin/*` really is gone rather than merely
+        # redirecting somewhere friendly.
+        sftpgo_environment_variables_httpd_bindings_0_enable_web_admin: false
         sftpgo_environment_variables_httpd_bindings_0_enable_web_client: true
+
+        sftpgo_environment_variables_data_provider_driver: postgres
+
+        # Ports deliberately unlike SFTPGo's own fallbacks (8080 for HTTP, 2022
+        # for SFTP, and a telemetry server that does not start at all) and
+        # unlike the other scenarios', so that nothing here can pass against a
+        # default-configured instance.
+        sftpgo_container_http_port: 8092
+        sftpgo_container_http_host_bind_port: 8092
+        sftpgo_container_sftp_port: 2092
+        sftpgo_container_labels_traefik_sftp_enabled: false
+        sftpgo_container_labels_traefik_webdav_enabled: false
+
+        # The Prometheus endpoint, which the role leaves off by default and
+        # which the MASH playbook turns on whenever Prometheus is deployed.
+        sftpgo_metrics_enabled: true
+        sftpgo_environment_variables_telemetry_bind_port: 8192
+        sftpgo_container_metrics_host_bind_port: 8192
+
+        sftpgo_environment_variables_data_provider_create_default_admin: true
+        sftpgo_environment_variables_sftpgo_default_admin_username: molecule-admin
+        sftpgo_environment_variables_sftpgo_default_admin_password: molecule-admin-password-postgres
 
         # Variables required for SFTPGo to connect to the Postgres database (via Unix socket)
         sftpgo_database_postgres_username: my_database_username
@@ -54,6 +80,11 @@ provisioner:
           }}
 
         # Variables for Postgres
+        # `postgres_identifier` merely repeats the Postgres role's own default.
+        # It is spelled out because verify.yml queries the database directly to
+        # prove SFTPGo's records went there, and another role's variables are
+        # not in scope in a verifier playbook.
+        postgres_identifier: postgres
         postgres_uid: 1000
         postgres_gid: 1000
         postgres_connection_password: postgres_password

@@ -45,17 +45,23 @@ pip3 install -r ./molecule/requirements.txt
 
 Currently these testing scenarios are available:
 
+Every scenario deploys SFTPGo, bootstraps an admin account from the role's `env` file, creates a user through the admin REST API and then uploads a file over a real SFTP session and reads it back off the host, so that what is verified is SFTPGo actually transferring files rather than merely answering HTTP. They differ in which data provider backs that, which HTTP interfaces are served, and which extra protocol or endpoint is exercised.
+
 ### `default`
 
-Tests a standard SFTPGo installation.
+A standard SFTPGo installation on SQLite, keeping the role's own HTTP surface: no WebAdmin, no WebClient, REST API only. Reads the SQLite data provider off the role's home path to confirm the admin and the user really landed there.
+
+### `default-selfbuild`
+
+The same, but building SFTPGo's own `Dockerfile` out of a checkout of the revision `sftpgo_version` pins, instead of pulling a published image. Only useful when that version changes, so CI gates it on a version bump (and on `workflow_dispatch`).
 
 ### `mariadb`
 
-Tests a standard SFTPGo installation with the MariaDB database.
+A standard SFTPGo installation with the MariaDB database, over a Unix socket. Opts into WebAdmin and WebClient and checks that the unauthenticated first-admin setup wizard is closed, enables the WebDAV server and does a WebDAV upload round trip, and queries MariaDB directly for the records - while asserting no SQLite file was created as a fallback.
 
 ### `postgres`
 
-Tests a standard SFTPGo installation with the Postgres database.
+A standard SFTPGo installation with the Postgres database, over a Unix socket. Serves the WebClient without the administrative interface, turns the Prometheus telemetry endpoint on and asserts SFTPGo's own counters account for the transfers and report the provider reachable, and queries Postgres directly for the records - again while asserting no SQLite fallback.
 
 ## Running
 

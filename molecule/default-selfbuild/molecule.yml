@@ -13,7 +13,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: sftpgo-${MOLECULE_DISTRO:-ubuntu2604}-default
+  - name: sftpgo-${MOLECULE_DISTRO:-ubuntu2604}-default-selfbuild
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
@@ -50,6 +50,11 @@ provisioner:
 
         sftpgo_environment_variables_data_provider_driver: sqlite
 
+        # What this scenario is for: building SFTPGo's own Dockerfile out of a
+        # checkout of the revision `sftpgo_version` pins, instead of pulling a
+        # published image.
+        sftpgo_container_image_self_build: true
+
         # Ports deliberately unlike SFTPGo's own fallbacks (8080 for HTTP, 2022
         # for SFTP). The process can only be listening here if the `env` file
         # this role renders reached it, and they can only be reachable from the
@@ -68,7 +73,7 @@ provisioner:
         # the role documents.
         sftpgo_environment_variables_data_provider_create_default_admin: true
         sftpgo_environment_variables_sftpgo_default_admin_username: molecule-admin
-        sftpgo_environment_variables_sftpgo_default_admin_password: molecule-admin-password-default
+        sftpgo_environment_variables_sftpgo_default_admin_password: molecule-admin-password-selfbuild
   env:
     # Workaround for https://github.com/ansible/molecule/issues/4391
     ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:~/.ansible/roles

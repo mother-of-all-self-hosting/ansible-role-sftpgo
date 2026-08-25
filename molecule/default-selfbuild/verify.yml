@@ -5,21 +5,19 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-- name: Verify SFTPGo backed by Postgres
+- name: Verify a self-built SFTPGo
   hosts: all
   become: true
   gather_facts: false
 
   vars:
     sftpgo_verify_base_url: "http://localhost:{{ sftpgo_container_http_port }}"
-    sftpgo_verify_metrics_url: "http://localhost:{{ sftpgo_environment_variables_telemetry_bind_port }}"
-    sftpgo_verify_username: molecule-postgres-user
+    sftpgo_verify_username: molecule-selfbuild-user
     # Uploaded over SFTP and read back both over SFTP and off the host
     # filesystem, so it has to survive the whole round trip unchanged.
-    sftpgo_verify_payload: molecule-sftpgo-postgres-payload-42
+    sftpgo_verify_payload: molecule-sftpgo-selfbuild-payload-42
     sftpgo_verify_remote_name: landed-via-sftp.txt
     sftpgo_verify_key_path: /root/sftpgo-molecule-key
-    sftpgo_verify_wrong_key_path: /root/sftpgo-molecule-wrong-key
 
   tasks:
     # `sftpgo_version` is read straight out of defaults/main.yml, unmediated by
@@ -66,19 +64,6 @@
         cmd: journalctl -xeu sftpgo.service
       changed_when: false
 
-    # The connection string is what the role builds out of the Postgres
-    # variables, and getting it wrong is the failure mode this scenario exists
-    # for. Postgres' socket form is peculiar - the host is `localhost` and the
-    # socket directory arrives as a query parameter - which is exactly why it
-    # is worth pinning down.
-    - name: Assert the role built a Unix-socket Postgres connection string
-      ansible.builtin.assert:
-        that:
-          - sftpgo_resolved.database_connection_string.startswith('postgres://' + sftpgo_database_postgres_username + ':' + sftpgo_database_postgres_password + '@localhost/')
-          - sftpgo_resolved.database_connection_string.endswith('/' + sftpgo_database_name + '?host=' + sftpgo_resolved.database_socket_path_container)
-        fail_msg: "The role built an unexpected Postgres connection string: {{ sftpgo_resolved.database_connection_string }}"
-        success_msg: "The role points SFTPGo at {{ sftpgo_database_name }} over the Postgres Unix socket"
-
     # `/healthz` answers 200 unconditionally, including on a completely
     # unconfigured SFTPGo, so it is good for nothing but waiting for the HTTP
     # listener to come up. It is never asserted on.
@@ -105,32 +90,37 @@
       register: sftpgo_unauthenticated
       changed_when: false
       loop:
-        - {path: /web/client/login, status: 200}
-        - {path: /web/admin/login, status: 404}
+        - {path: /, status: 404}
         - {path: /web/admin/setup, status: 404}
+        - {path: /web/admin/login, status: 404}
         - {path: /api/v2/version, status: 401}
         - {path: /api/v2/status, status: 401}
         - {path: /api/v2/users, status: 401}
+        - {path: /api/v2/admins, status: 401}
 
-    # `/web/admin/setup` is SFTPGo's first-admin wizard, which hands full
-    # administrative rights to whoever reaches it first. With the web admin
-    # switched off it is not routed at all, and `/web/admin/login` is gone with
-    # it, while the web client the scenario asked for is served. Only the `env`
-    # file this role renders can produce that combination - left to itself the
-    # image serves both interfaces.
-    - name: Assert SFTPGo serves only the web client and no unauthenticated API
+    # Two negative controls in one, and neither can pass by accident:
+    #
+    # - an SFTPGo that never received this role's `env` file has the web admin
+    #   enabled, answers `/` with a 302 to `/web/admin/setup` and serves that
+    #   wizard - which creates the first admin to whoever asks - with a 200.
+    #   The 404s are the role's `ENABLE_WEB_ADMIN=false` having taken effect.
+    # - the REST API answers 401 to everything without a token, so the
+    #   authenticated probes further down are genuinely authenticated rather
+    #   than talking to an open API.
+    - name: Assert SFTPGo exposes neither a web interface nor an unauthenticated API
       ansible.builtin.assert:
         that:
-          - sftpgo_unauthenticated.results[0].status == 200
+          - sftpgo_unauthenticated.results[0].status == 404
           - sftpgo_unauthenticated.results[1].status == 404
           - sftpgo_unauthenticated.results[2].status == 404
           - sftpgo_unauthenticated.results[3].status == 401
           - sftpgo_unauthenticated.results[4].status == 401
           - sftpgo_unauthenticated.results[5].status == 401
+          - sftpgo_unauthenticated.results[6].status == 401
         fail_msg: >-
           SFTPGo answered unexpectedly without a token:
           {{ sftpgo_unauthenticated.results | map(attribute='status') | list }}
-        success_msg: "SFTPGo serves the web client only, with no administrative interface and no unauthenticated REST API"
+        success_msg: "SFTPGo serves no web interface and refuses every REST API call without a token"
 
     - name: Obtain an SFTPGo REST API token as the admin the role created
       ansible.builtin.uri:
@@ -143,6 +133,11 @@
         follow_redirects: none
       register: sftpgo_token
 
+    # The admin exists only because the role rendered
+    # `SFTPGO_DATA_PROVIDER__CREATE_DEFAULT_ADMIN` together with the username
+    # and password into the `env` file. SFTPGo refuses to start when asked to
+    # create the default admin without them, so a token here also proves the
+    # declarative bootstrap the role documents actually worked.
     - name: Assert the admin the role bootstrapped can authenticate
       ansible.builtin.assert:
         that: sftpgo_token.json.access_token | default('') | length > 0
@@ -159,11 +154,11 @@
         follow_redirects: none
       register: sftpgo_version_endpoint
 
-    # This is what earns the role its automerged version bumps: the process
-    # answering on the published port reports the very version that
-    # `sftpgo_version` in defaults/main.yml pins, so a bump that did not
-    # actually take effect fails here. SFTPGo reports the version without the
-    # leading `v` that its tags and this role's value carry.
+    # SFTPGo compiles its version into the binary from a constant in its own
+    # source tree, so this is the build's own account of what it produced,
+    # rather than a repetition of the tag the checkout was made from. It is
+    # reported without the leading `v` that the tags and this role's value
+    # carry.
     - name: Assert SFTPGo runs the version the role pins
       ansible.builtin.assert:
         that: sftpgo_version_endpoint.json.version == sftpgo_role_defaults.sftpgo_version | regex_replace('^v', '')
@@ -172,22 +167,43 @@
           but the role pins {{ sftpgo_role_defaults.sftpgo_version }}
         success_msg: "SFTPGo runs {{ sftpgo_version_endpoint.json.version }}, as pinned by the role"
 
+    # What separates this scenario from `default`: nothing was pulled from a
+    # registry here, so these checks establish that the image the unit runs
+    # really is the one built on this machine, out of a checkout standing at
+    # the revision `sftpgo_version` pins. Without them a leftover or pulled
+    # image could satisfy every probe below.
     - name: Determine which container image SFTPGo runs
       ansible.builtin.command:
         cmd: docker inspect --format {{ '{{.Config.Image}}' }} {{ sftpgo_resolved.identifier }}
       register: sftpgo_container_image_in_use
       changed_when: false
 
-    - name: Assert SFTPGo runs the image the role configures
+    - name: Assert SFTPGo runs the locally built image rather than a pulled one
       ansible.builtin.assert:
         that:
-          - sftpgo_container_image_in_use.stdout == sftpgo_resolved.container_image
+          - sftpgo_container_image_in_use.stdout == sftpgo_resolved.self_build_image
+          - sftpgo_container_image_in_use.stdout != sftpgo_resolved.container_image
           - sftpgo_container_image_in_use.stdout.split(':') | last == sftpgo_role_defaults.sftpgo_version
         fail_msg: >-
           SFTPGo runs {{ sftpgo_container_image_in_use.stdout }},
-          but the role configures {{ sftpgo_resolved.container_image }}
-          at version {{ sftpgo_role_defaults.sftpgo_version }}
-        success_msg: "SFTPGo runs {{ sftpgo_container_image_in_use.stdout }}"
+          but the role builds {{ sftpgo_resolved.self_build_image }}
+        success_msg: "SFTPGo runs the locally built {{ sftpgo_container_image_in_use.stdout }}"
+
+    # `ansible.builtin.git` can check a revision out but cannot report which one
+    # a working copy stands at, which is the whole point here.
+    - name: Determine the revision the image was built from  # noqa: command-instead-of-module
+      ansible.builtin.command:
+        cmd: "git -C {{ sftpgo_resolved.self_build_src_path }} describe --tags --exact-match"
+      register: sftpgo_self_build_revision
+      changed_when: false
+
+    - name: Assert the image was built from the revision the role pins
+      ansible.builtin.assert:
+        that: sftpgo_self_build_revision.stdout == sftpgo_role_defaults.sftpgo_version
+        fail_msg: >-
+          The checkout stands at {{ sftpgo_self_build_revision.stdout }},
+          but the role pins {{ sftpgo_role_defaults.sftpgo_version }}
+        success_msg: "The image was built from {{ sftpgo_self_build_revision.stdout }}"
 
     - name: Ask SFTPGo about the services it started
       ansible.builtin.uri:
@@ -201,28 +217,27 @@
 
     # `/api/v2/status` reports what SFTPGo's configuration layer resolved, so
     # it sees the `env` file this role rendered rather than the template on
-    # disk. SFTPGo falls back to SQLite when nothing selects a data provider
-    # and to port 2022 for SFTP, so none of this can be satisfied by an
-    # instance the role never configured.
+    # disk. Every value below differs from what SFTPGo falls back to on its own
+    # (port 2022 for SFTP, and this scenario's ports are not SFTPGo's either),
+    # so none of it can be satisfied by an instance the role never configured.
     - name: Assert SFTPGo resolved the configuration the role rendered
       ansible.builtin.assert:
         that:
-          - sftpgo_status.json.data_provider.driver == 'postgresql'
+          - sftpgo_status.json.data_provider.driver == 'sqlite'
           - sftpgo_status.json.data_provider.is_active
+          - sftpgo_status.json.ssh.is_active
           - sftpgo_status.json.ssh.bindings[0].port == sftpgo_container_sftp_port
           - not sftpgo_status.json.webdav.is_active
+          - not sftpgo_status.json.ftp.is_active
         fail_msg: "SFTPGo did not resolve the configuration the role rendered: {{ sftpgo_status.json }}"
         success_msg: >-
           SFTPGo serves SFTP on port {{ sftpgo_container_sftp_port }} against the
-          {{ sftpgo_status.json.data_provider.driver }} data provider, with WebDAV off
+          {{ sftpgo_status.json.data_provider.driver }} data provider, with WebDAV and FTP off
 
-    - name: Generate SSH key pairs for the SFTPGo probe user
+    - name: Generate an SSH key pair for the SFTPGo probe user
       ansible.builtin.command:
-        cmd: ssh-keygen -q -t ed25519 -N '' -C molecule -f {{ item }}
-        creates: "{{ item }}"
-      loop:
-        - "{{ sftpgo_verify_key_path }}"
-        - "{{ sftpgo_verify_wrong_key_path }}"
+        cmd: ssh-keygen -q -t ed25519 -N '' -C molecule -f {{ sftpgo_verify_key_path }}
+        creates: "{{ sftpgo_verify_key_path }}"
 
     - name: Read the SFTPGo probe user's public key
       ansible.builtin.slurp:
@@ -264,9 +279,9 @@
         mode: "0600"
 
     # The probe that crosses every boundary at once: a real SSH transport, a
-    # real SFTP subsystem, a user record that only exists because it was
-    # written to Postgres, key material only that user has, and a write that
-    # has to end up inside the bind mount the role set up.
+    # real SFTP subsystem, a user record that only exists because the REST API
+    # accepted it, key material only that user has, and a write that has to end
+    # up inside the bind mount the role set up.
     - name: Upload a file to SFTPGo over SFTP and read it back
       ansible.builtin.command:
         cmd: >-
@@ -274,7 +289,6 @@
           -i {{ sftpgo_verify_key_path }}
           -o StrictHostKeyChecking=no
           -o UserKnownHostsFile=/dev/null
-          -o IdentitiesOnly=yes
           -o BatchMode=yes
           -o ConnectTimeout=15
           -P {{ sftpgo_container_sftp_port }}
@@ -293,6 +307,8 @@
         src: "{{ sftpgo_resolved.data_path }}/{{ sftpgo_verify_username }}/{{ sftpgo_verify_remote_name }}"
       register: sftpgo_uploaded_on_host
 
+    # The file living under the role's own data path is also what proves the
+    # bind mount into the container's `/srv/sftpgo/data` is wired up correctly.
     - name: Assert the SFTP round trip landed in the role's data path
       ansible.builtin.assert:
         that:
@@ -305,140 +321,37 @@
           A file uploaded over SFTP is stored under
           {{ sftpgo_resolved.data_path }}/{{ sftpgo_verify_username }} and reads back intact
 
-    # Without this, "SFTP works" could just mean "the SSH listener lets
-    # everyone in". The username is the real one this time, so SFTPGo has to
-    # look its public keys up in Postgres and refuse a key that is not among
-    # them.
-    - name: Attempt an SFTP session as the real user with a key it does not have
+    # Without this, "SFTP works" could just mean "the SSH listener accepts
+    # everyone". SFTPGo has to look the user up in its data provider and reject
+    # one that was never created there.
+    - name: Attempt an SFTP session as a user that was never created
       ansible.builtin.command:
         cmd: >-
           sftp -q
-          -i {{ sftpgo_verify_wrong_key_path }}
+          -i {{ sftpgo_verify_key_path }}
           -o StrictHostKeyChecking=no
           -o UserKnownHostsFile=/dev/null
-          -o IdentitiesOnly=yes
           -o BatchMode=yes
           -o ConnectTimeout=15
           -o NumberOfPasswordPrompts=0
           -P {{ sftpgo_container_sftp_port }}
           -b /root/sftpgo-molecule-batch
-          {{ sftpgo_verify_username }}@127.0.0.1
+          molecule-user-that-does-not-exist@127.0.0.1
       register: sftpgo_sftp_rejected
       changed_when: false
       failed_when: sftpgo_sftp_rejected.rc == 0
 
-    - name: Assert SFTPGo checks the key against the one stored for the user
+    - name: Assert SFTPGo rejects a user that is not in its data provider
       ansible.builtin.assert:
         that: sftpgo_sftp_rejected.rc != 0
-        fail_msg: "SFTPGo accepted an SFTP session authenticated with a key the user does not have"
-        success_msg: "SFTPGo rejects an SFTP session authenticated with a key the user does not have"
-
-    # SFTPGo's telemetry server does not start at all unless it is given a bind
-    # port, so an instance the role never configured has nothing listening
-    # here. `sftpgo_metrics_enabled` is what the MASH playbook turns on
-    # whenever Prometheus is deployed alongside. Fetched last, so that the
-    # counters have the probes above to report on.
-    #
-    # `sftpgo_dataprovider_availability` is a gauge a background goroutine
-    # refreshes once a minute by actually querying the provider, and it reads 0
-    # until that first check lands - so this waits for the check rather than
-    # asserting on a value that means "not measured yet".
-    - name: Retrieve SFTPGo's Prometheus metrics once the data provider has been checked (up to 2m)
-      ansible.builtin.uri:
-        url: "{{ sftpgo_verify_metrics_url }}/metrics"
-        method: GET
-        status_code: [200]
-        return_content: true
-        follow_redirects: none
-      register: sftpgo_metrics
-      until: sftpgo_metrics.content | regex_search('^sftpgo_dataprovider_availability 1$', multiline=True) is not none
-      retries: 24
-      delay: 5
-
-    - name: Remember the unlabelled counters SFTPGo reports
-      ansible.builtin.set_fact:
-        sftpgo_metric_values: >-
-          {{
-            dict(
-              sftpgo_metrics.content.splitlines()
-              | select('match', '^sftpgo_[a-z_0-9]+ ')
-              | map('split', ' ')
-            )
-          }}
-
-    # Not just "the endpoint answers": these counters are a second, independent
-    # account of everything the probes above did. `dataprovider_availability`
-    # is SFTPGo's own verdict on whether Postgres is reachable, and the login
-    # and transfer counters can only be non-zero because the SFTP round trip
-    # and the rejected key actually happened.
-    - name: Assert SFTPGo's metrics report the data provider and the transfers the probes made
-      ansible.builtin.assert:
-        that:
-          - sftpgo_metric_values['sftpgo_dataprovider_availability'] | float == 1
-          - sftpgo_metric_values['sftpgo_public_key_login_ok_total'] | float >= 1
-          - sftpgo_metric_values['sftpgo_public_key_login_ko_total'] | float >= 1
-          - sftpgo_metric_values['sftpgo_uploads_total'] | float >= 1
-          - sftpgo_metric_values['sftpgo_downloads_total'] | float >= 1
-        fail_msg: >-
-          SFTPGo's metrics on port {{ sftpgo_environment_variables_telemetry_bind_port }}
-          do not report what the probes did: {{ sftpgo_metric_values | default({}) }}
-        success_msg: >-
-          SFTPGo reports its Postgres provider available and accounts for the SFTP
-          round trip and the rejected key on port {{ sftpgo_environment_variables_telemetry_bind_port }}
-
-    - name: Read the SFTPGo records back out of Postgres
-      ansible.builtin.command:
-        argv:
-          - docker
-          - exec
-          - --env
-          - "PGPASSWORD={{ sftpgo_database_postgres_password }}"
-          - "{{ postgres_identifier }}"
-          - psql
-          - "--username={{ sftpgo_database_postgres_username }}"
-          - "--dbname={{ sftpgo_database_name }}"
-          - --no-align
-          - --tuples-only
-          - --command
-          - >-
-            select 'admin', username from admins
-            union all select 'user', username from users
-            union all select 'schema', version::text from schema_version
-            order by 1, 2
-      register: sftpgo_postgres_query
-      changed_when: false
-
-    - name: Check whether SFTPGo also left a SQLite data provider behind
-      ansible.builtin.stat:
-        path: "{{ sftpgo_resolved.home_path }}/sftpgo.db"
-      register: sftpgo_sqlite_file
-
-    # The claim this scenario exists to make, and the SQLite check is half of
-    # it. SFTPGo silently falls back to a SQLite file in its home directory
-    # when no data provider is configured, so "Postgres holds the records" is
-    # only meaningful alongside "and there is no SQLite file to have held them
-    # instead". A non-zero schema version means SFTPGo ran its migrations
-    # against this database.
-    - name: Assert Postgres is where SFTPGo's records live, with no SQLite fallback
-      ansible.builtin.assert:
-        that:
-          - "'admin|' + sftpgo_environment_variables_sftpgo_default_admin_username in sftpgo_postgres_query.stdout"
-          - "'user|' + sftpgo_verify_username in sftpgo_postgres_query.stdout"
-          - sftpgo_postgres_query.stdout | regex_search('schema[|][1-9][0-9]*') is not none
-          - not sftpgo_sqlite_file.stat.exists
-        fail_msg: >-
-          Postgres does not hold SFTPGo's records ({{ sftpgo_postgres_query.stdout | default('') }}),
-          or SFTPGo fell back to SQLite at {{ sftpgo_resolved.home_path }}/sftpgo.db
-        success_msg: >-
-          Postgres holds admin {{ sftpgo_environment_variables_sftpgo_default_admin_username }}
-          and user {{ sftpgo_verify_username }}, and no SQLite data provider was created
+        fail_msg: "SFTPGo accepted an SFTP session for a user that was never created"
+        success_msg: "SFTPGo rejects an SFTP session for a user that is not in its data provider"
 
     - name: Show what was verified
       ansible.builtin.debug:
         msg:
           - "SFTPGo systemd: {{ sftpgo_service.status.ActiveState }}"
           - "SFTPGo version: {{ sftpgo_version_endpoint.json.version }}"
-          - "SFTPGo image: {{ sftpgo_container_image_in_use.stdout }}"
-          - "SFTPGo data provider: {{ sftpgo_status.json.data_provider.driver }} in the {{ sftpgo_database_name }} Postgres database"
-          - "SFTPGo metrics: data provider available={{ sftpgo_metric_values['sftpgo_dataprovider_availability'] }}, uploads={{ sftpgo_metric_values['sftpgo_uploads_total'] }} on port {{ sftpgo_environment_variables_telemetry_bind_port }}"
+          - "SFTPGo image: {{ sftpgo_container_image_in_use.stdout }} built from {{ sftpgo_self_build_revision.stdout }}"
+          - "SFTPGo data provider: {{ sftpgo_status.json.data_provider.driver }}"
           - "SFTP round trip: {{ sftpgo_resolved.data_path }}/{{ sftpgo_verify_username }}/{{ sftpgo_verify_remote_name }}"
