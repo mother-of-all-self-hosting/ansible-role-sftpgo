@@ -3,7 +3,7 @@ galaxy_info:
   author: Suguru Hirahara
   company: progressiv
   role_name: sftpgo
-  namespace: progressiv
+  namespace: mash
   description: SFTPGo
   platforms:
     - name: Debian
