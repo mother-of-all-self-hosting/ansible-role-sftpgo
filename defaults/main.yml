@@ -77,13 +77,13 @@ sftpgo_container_sftp_host_bind_port: "{{ sftpgo_container_sftp_port }}"
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:2586"), or empty string to not expose.
 sftpgo_container_webdav_host_bind_port: "{{ sftpgo_container_webdav_port }}"
 
-# The port number in the container
+# The port number the HTTP server listens on in the container
 sftpgo_container_http_port: 8080
 
 # The port number of the metrics server in the container
 sftpgo_container_metrics_port: "{{ sftpgo_environment_variables_telemetry_bind_port }}"
 
-# The port number in the container
+# The port number the SFTP server listens on in the container
 sftpgo_container_sftp_port: 2022
 
 # The port number in the container
