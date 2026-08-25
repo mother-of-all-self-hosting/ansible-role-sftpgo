@@ -130,9 +130,7 @@ sftpgo_environment_variables_httpd_bindings_0_enable_web_client: true
 
 ### Create the first admin account with environment variables (optional)
 
-To use SFTPGo, you need to create an admin account. If you enable WebAdmin and open it, you can follow the set up wizard to create the first admin account.
-
-Alternatively, you can create it by adding the following configuration to your `vars.yml` file:
+To use SFTPGo, you need to create an admin account. The recommended way is to declare it in your configuration, by adding the following to your `vars.yml` file:
 
 ```yaml
 sftpgo_environment_variables_data_provider_create_default_admin: true
@@ -140,10 +138,22 @@ sftpgo_environment_variables_sftpgo_default_admin_username: ADMIN_USERNAME_HERE
 sftpgo_environment_variables_sftpgo_default_admin_password: ADMIN_PASSWORD_HERE
 ```
 
-Replace `ADMIN_USERNAME_HERE` and `ADMIN_PASSWORD_HERE` with your own values.
+Replace `ADMIN_USERNAME_HERE` and `ADMIN_PASSWORD_HERE` with your own values. There is no guessable fallback: if you enable `sftpgo_environment_variables_data_provider_create_default_admin` without supplying both, SFTPGo refuses to start, and this role fails the playbook run before deploying rather than letting the container crash-loop.
 
 >[!NOTE]
-> Changing those values after creating the user does not update the login credential.
+> Changing those values after creating the admin account does not update the login credentials. The admin account is only created when the data provider holds no admin at all.
+
+Alternatively, if you enable WebAdmin (see the previous section) and open it, you can follow the setup wizard to create the first admin account.
+
+>[!WARNING]
+> The setup wizard is served **without authentication** at `/web/admin/setup`, to whoever reaches it first, for as long as no admin account exists. On a public hostname that is a race you can lose. Either declare the admin account as shown above (the wizard then redirects to the login page and can no longer be used), or protect the wizard with an installation code by adding the following to your `vars.yml` file:
+>
+> ```yaml
+> sftpgo_environment_variables_additional_variables: |
+>   SFTPGO_HTTPD__SETUP__INSTALLATION_CODE=YOUR_INSTALLATION_CODE_HERE
+> ```
+>
+> This role disables WebAdmin and WebClient by default, so an installation that does not opt into them does not expose the wizard at all.
 
 ### Enable WebDAV server (optional)
 
