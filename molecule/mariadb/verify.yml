@@ -369,6 +369,11 @@
             order by 1
       register: sftpgo_mariadb_query
       changed_when: false
+      # A data provider SFTPGo never migrated has no tables to select from, so
+      # this errors rather than returning nothing. Let the assert below be the
+      # one that fails, since its message is the one that names the SQLite
+      # fallback as the likely reason.
+      failed_when: false
 
     - name: Check whether SFTPGo also left a SQLite data provider behind
       ansible.builtin.stat:
