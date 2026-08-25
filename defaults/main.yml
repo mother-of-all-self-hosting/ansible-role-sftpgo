@@ -45,6 +45,11 @@ sftpgo_container_image_self_build_name: "drakkan/sftpgo:{{ sftpgo_container_imag
 sftpgo_container_image_self_build_repo: "https://github.com/drakkan/sftpgo.git"
 sftpgo_container_image_self_build_repo_version: "{{ sftpgo_version if sftpgo_version != 'latest' else 'main' }}"
 sftpgo_container_image_self_build_src_files_path: "{{ sftpgo_base_path }}/docker-src"
+# SFTPGo keeps its Dockerfile at the root of its repository. `Dockerfile.alpine`
+# and `Dockerfile.distroless` live there too, so a different base image can be
+# selected by overriding `sftpgo_container_image_self_build_repo_dockerfile`.
+sftpgo_container_image_self_build_repo_dockerfile_dir: "{{ sftpgo_container_image_self_build_src_files_path }}"
+sftpgo_container_image_self_build_repo_dockerfile: Dockerfile
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.
 sftpgo_container_network: "{{ sftpgo_identifier }}"
