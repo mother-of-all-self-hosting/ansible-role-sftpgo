@@ -49,6 +49,22 @@
       sftpgo_environment_variables_data_provider_driver must be 'sqlite', 'mysql', 'postgres', 'cockroachdb', 'bolt', or 'memory'
   when: "sftpgo_environment_variables_data_provider_driver not in ['sqlite', 'mysql', 'postgres', 'cockroachdb', 'bolt', 'memory']"
 
+# SFTPGo refuses to start at all when it is asked to create the default admin
+# without being given credentials for it ("to create the default admin you need
+# to set the env vars ..."), and `Restart=always` turns that into a container
+# that crash-loops while the systemd unit still reports itself as active.
+# Catching it here says what is actually wrong, before anything is deployed.
+- name: Fail if SFTPGo default admin credentials not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`) when
+      `sftpgo_environment_variables_data_provider_create_default_admin` is `true`.
+      SFTPGo will not start without it.
+  when: "sftpgo_environment_variables_data_provider_create_default_admin | bool and lookup('vars', item, default='') | string | length == 0"
+  with_items:
+    - sftpgo_environment_variables_sftpgo_default_admin_username
+    - sftpgo_environment_variables_sftpgo_default_admin_password
+
 - name: Run if SFTPGo + MySQL integration is enabled
   when: sftpgo_environment_variables_data_provider_driver == 'mysql'
   block:
