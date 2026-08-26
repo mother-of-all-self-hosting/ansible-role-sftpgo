@@ -9,7 +9,7 @@
     "One thing that is not a constraint, despite looking like one: SFTPGo relicensed nothing at v2.6. `LICENSE` is byte-identical AGPL-3.0 at v2.5.6, v2.6.0 and v2.7.5. What changed at v2.6.0 is that the KeenThemes theme used by the WebAdmin and WebClient interfaces became proprietary (which is why this role leaves both interfaces off by default), and v2.7.0 added a `NOTICE` file with AGPL section 7 additional terms about attribution. SFTPGo Enterprise is a separate commercial product, not a feature gate inside these images, so no patch bump inside 2.7.x can walk into a licence-restricted build."
   ],
   "extends": [
-    "github>mother-of-all-self-hosting/renovate-config#v1.0.0",
-    "github>mother-of-all-self-hosting/renovate-config//patch-automerge#v1.0.0"
+    "github>mother-of-all-self-hosting/renovate-config#v1.1.0",
+    "github>mother-of-all-self-hosting/renovate-config//patch-automerge#v1.1.0"
   ]
 }
