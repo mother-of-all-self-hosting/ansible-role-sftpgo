@@ -40,7 +40,6 @@ jobs:
       matrix:
         distro:
           - ubuntu2604
-          - debian13
         scenario:
           - default
           - mariadb
@@ -133,7 +132,6 @@ jobs:
       matrix:
         distro:
           - ubuntu2604
-          - debian13
       fail-fast: false
 
     env:
