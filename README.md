@@ -30,16 +30,14 @@ To install the hook, run the [`just`](https://github.com/casey/just) command bel
 just prek-install-git-pre-commit-hook
 ```
 
-### Releases
-
-Release tags (`v<SFTPGo version>-<release>`, e.g. `v2.7.5-0`) are cut automatically by the [autotag workflow](.github/workflows/autotag.yml) when a commit lands on `main`. Nobody has to tag anything by hand.
-
-The tag is derived from the state of the repository — `sftpgo_version` in [`defaults/main.yml`](defaults/main.yml), plus the tags that already exist — rather than from commit messages, which makes it independent of the order in which pull requests get merged. A commit that only touches documentation or CI does not get a release.
-
-[`bin/compute-next-tag.sh`](bin/compute-next-tag.sh) holds all of that logic and can be run locally to see what the currently checked out commit would be released as. [`bin/test-compute-next-tag.sh`](bin/test-compute-next-tag.sh) exercises it against throwaway repositories, and runs as a prek hook whenever that script or `defaults/main.yml` changes.
-
 ### Molecule
 
 This role supports [Molecule](https://docs.ansible.com/projects/molecule/), an Ansible testing framework designed for developing and testing Ansible collections, playbooks, and roles.
 
 Refer to [this page](./molecule/README.md) for details about how to utilize it.
+
+### Releases
+
+Tags are created by [`.github/workflows/autotag.yml`](.github/workflows/autotag.yml), which asks [`bin/compute-next-tag.sh`](bin/compute-next-tag.sh) what the commit on `main` should be released as. The answer comes from the SFTPGo version pinned in [`defaults/main.yml`](defaults/main.yml) and from the tags that already exist, so a commit that only touches documentation or CI is not released at all, and any change to the role itself is — without waiting for a dependency bump to carry it along.
+
+[`bin/test-compute-next-tag.sh`](bin/test-compute-next-tag.sh) exercises that script against throwaway repositories, and runs as a prek hook.
