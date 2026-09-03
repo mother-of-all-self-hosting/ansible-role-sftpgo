@@ -159,13 +159,11 @@
         follow_redirects: none
       register: sftpgo_version_endpoint
 
-    - name: Assert SFTPGo runs the version the role pins
+    - name: Assert the running SFTPGo is the version this role installs
       ansible.builtin.assert:
         that: sftpgo_version_endpoint.json.version == sftpgo_role_defaults.sftpgo_version | regex_replace('^v', '')
-        fail_msg: >-
-          SFTPGo reports version {{ sftpgo_version_endpoint.json.version | default('none') }},
-          but the role pins {{ sftpgo_role_defaults.sftpgo_version }}
-        success_msg: "SFTPGo runs {{ sftpgo_version_endpoint.json.version }}, as pinned by the role"
+        fail_msg: "SFTPGo reports {{ sftpgo_version_endpoint.json.version | default('none') }}, expected {{ sftpgo_role_defaults.sftpgo_version }}"
+        success_msg: "SFTPGo reports {{ sftpgo_version_endpoint.json.version }}"
 
     - name: Determine which container image SFTPGo runs
       ansible.builtin.command:
