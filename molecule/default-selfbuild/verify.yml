@@ -154,11 +154,6 @@
         follow_redirects: none
       register: sftpgo_version_endpoint
 
-    # SFTPGo compiles its version into the binary from a constant in its own
-    # source tree, so this is the build's own account of what it produced,
-    # rather than a repetition of the tag the checkout was made from. It is
-    # reported without the leading `v` that the tags and this role's value
-    # carry.
     - name: Assert SFTPGo runs the version the role pins
       ansible.builtin.assert:
         that: sftpgo_version_endpoint.json.version == sftpgo_role_defaults.sftpgo_version | regex_replace('^v', '')

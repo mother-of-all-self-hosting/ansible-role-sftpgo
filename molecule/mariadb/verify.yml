@@ -161,11 +161,6 @@
         follow_redirects: none
       register: sftpgo_version_endpoint
 
-    # This is what earns the role its automerged version bumps: the process
-    # answering on the published port reports the very version that
-    # `sftpgo_version` in defaults/main.yml pins, so a bump that did not
-    # actually take effect fails here. SFTPGo reports the version without the
-    # leading `v` that its tags and this role's value carry.
     - name: Assert SFTPGo runs the version the role pins
       ansible.builtin.assert:
         that: sftpgo_version_endpoint.json.version == sftpgo_role_defaults.sftpgo_version | regex_replace('^v', '')
