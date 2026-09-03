@@ -400,12 +400,12 @@
           MariaDB holds admin {{ sftpgo_environment_variables_sftpgo_default_admin_username }}
           and user {{ sftpgo_verify_username }}, and no SQLite data provider was created
 
-    - name: Show what was verified
+    - name: Show the SFTPGo verification summary
       ansible.builtin.debug:
         msg:
           - "SFTPGo systemd: {{ sftpgo_service.status.ActiveState }}"
           - "SFTPGo version: {{ sftpgo_version_endpoint.json.version }}"
           - "SFTPGo image: {{ sftpgo_container_image_in_use.stdout }}"
           - "SFTPGo data provider: {{ sftpgo_status.json.data_provider.driver }} in the {{ sftpgo_database_name }} MariaDB database"
-          - "SFTP round trip: {{ sftpgo_resolved.data_path }}/{{ sftpgo_verify_username }}/{{ sftpgo_verify_remote_name }}"
-          - "WebDAV round trip: {{ sftpgo_resolved.data_path }}/{{ sftpgo_verify_username }}/{{ sftpgo_verify_webdav_remote_name }}"
+          - "SFTPGo SFTP round trip: {{ sftpgo_resolved.data_path }}/{{ sftpgo_verify_username }}/{{ sftpgo_verify_remote_name }}"
+          - "SFTPGo WebDAV round trip: {{ sftpgo_resolved.data_path }}/{{ sftpgo_verify_username }}/{{ sftpgo_verify_webdav_remote_name }}"

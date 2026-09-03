@@ -347,11 +347,11 @@
         fail_msg: "SFTPGo accepted an SFTP session for a user that was never created"
         success_msg: "SFTPGo rejects an SFTP session for a user that is not in its data provider"
 
-    - name: Show what was verified
+    - name: Show the SFTPGo verification summary
       ansible.builtin.debug:
         msg:
           - "SFTPGo systemd: {{ sftpgo_service.status.ActiveState }}"
           - "SFTPGo version: {{ sftpgo_version_endpoint.json.version }}"
           - "SFTPGo image: {{ sftpgo_container_image_in_use.stdout }} built from {{ sftpgo_self_build_revision.stdout }}"
           - "SFTPGo data provider: {{ sftpgo_status.json.data_provider.driver }}"
-          - "SFTP round trip: {{ sftpgo_resolved.data_path }}/{{ sftpgo_verify_username }}/{{ sftpgo_verify_remote_name }}"
+          - "SFTPGo SFTP round trip: {{ sftpgo_resolved.data_path }}/{{ sftpgo_verify_username }}/{{ sftpgo_verify_remote_name }}"

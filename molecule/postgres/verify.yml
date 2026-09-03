@@ -438,7 +438,7 @@
           Postgres holds admin {{ sftpgo_environment_variables_sftpgo_default_admin_username }}
           and user {{ sftpgo_verify_username }}, and no SQLite data provider was created
 
-    - name: Show what was verified
+    - name: Show the SFTPGo verification summary
       ansible.builtin.debug:
         msg:
           - "SFTPGo systemd: {{ sftpgo_service.status.ActiveState }}"
@@ -446,4 +446,4 @@
           - "SFTPGo image: {{ sftpgo_container_image_in_use.stdout }}"
           - "SFTPGo data provider: {{ sftpgo_status.json.data_provider.driver }} in the {{ sftpgo_database_name }} Postgres database"
           - "SFTPGo metrics: data provider available={{ sftpgo_metric_values['sftpgo_dataprovider_availability'] }}, uploads={{ sftpgo_metric_values['sftpgo_uploads_total'] }} on port {{ sftpgo_environment_variables_telemetry_bind_port }}"
-          - "SFTP round trip: {{ sftpgo_resolved.data_path }}/{{ sftpgo_verify_username }}/{{ sftpgo_verify_remote_name }}"
+          - "SFTPGo SFTP round trip: {{ sftpgo_resolved.data_path }}/{{ sftpgo_verify_username }}/{{ sftpgo_verify_remote_name }}"
