@@ -20,17 +20,13 @@
     sftpgo_verify_key_path: /root/sftpgo-molecule-key
 
   tasks:
-    # `sftpgo_version` is read straight out of defaults/main.yml, unmediated by
-    # anything this scenario could have overridden, because it is the leaf
-    # literal Renovate edits and asserting against it is what earns the role
-    # its automerged bumps. Only leaf literals may be read this way: values
-    # built out of them through Jinja cannot resolve in a namespaced copy, and
-    # scenario-tuned values must not be read from here at all, since these
-    # defaults would outrank the inventory.
-    - name: Read the SFTPGo role's defaults
+    # The role is not included in this playbook, so its defaults are not in
+    # scope. Reading defaults/main.yml directly ties the version assertion
+    # below.
+    - name: Load the role defaults
       ansible.builtin.include_vars:
         file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
-        name: sftpgo_role_defaults
+        name: sftpgo_defaults
 
     - name: Read the values the role resolved
       ansible.builtin.slurp:
@@ -156,8 +152,8 @@
 
     - name: Assert the running SFTPGo is the version this role installs
       ansible.builtin.assert:
-        that: sftpgo_version_endpoint.json.version == sftpgo_role_defaults.sftpgo_version | regex_replace('^v', '')
-        fail_msg: "SFTPGo reports {{ sftpgo_version_endpoint.json.version | default('none') }}, expected {{ sftpgo_role_defaults.sftpgo_version }}"
+        that: sftpgo_version_endpoint.json.version == sftpgo_defaults.sftpgo_version | regex_replace('^v', '')
+        fail_msg: "SFTPGo reports {{ sftpgo_version_endpoint.json.version | default('none') }}, expected {{ sftpgo_defaults.sftpgo_version }}"
         success_msg: "SFTPGo reports {{ sftpgo_version_endpoint.json.version }}"
 
     - name: Determine which container image SFTPGo runs
@@ -173,11 +169,11 @@
       ansible.builtin.assert:
         that:
           - sftpgo_container_image_in_use.stdout == sftpgo_resolved.container_image
-          - sftpgo_container_image_in_use.stdout.split(':') | last == sftpgo_role_defaults.sftpgo_version
+          - sftpgo_container_image_in_use.stdout.split(':') | last == sftpgo_defaults.sftpgo_version
         fail_msg: >-
           SFTPGo runs {{ sftpgo_container_image_in_use.stdout }},
           but the role configures {{ sftpgo_resolved.container_image }}
-          at version {{ sftpgo_role_defaults.sftpgo_version }}
+          at version {{ sftpgo_defaults.sftpgo_version }}
         success_msg: "SFTPGo runs {{ sftpgo_container_image_in_use.stdout }}"
 
     - name: Ask SFTPGo about the services it started
