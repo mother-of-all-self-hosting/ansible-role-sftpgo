@@ -147,7 +147,7 @@
         fail_msg: "SFTPGo issued no token for {{ sftpgo_environment_variables_sftpgo_default_admin_username }}"
         success_msg: "SFTPGo issued a token for the admin the role bootstrapped"
 
-    - name: Ask SFTPGo which version it is running
+    - name: Query the version of the running SFTPGo
       ansible.builtin.uri:
         url: "{{ sftpgo_verify_base_url }}/api/v2/version"
         method: GET
