@@ -41,24 +41,27 @@
       ansible.builtin.set_fact:
         sftpgo_resolved: "{{ sftpgo_resolved_raw.content | b64decode | from_json }}"
 
-    # Worth little on its own: the systemd unit carries `Restart=always`, so a
-    # container that crashes on every boot still reports `active`. Everything
-    # below is what actually decides whether SFTPGo works.
-    - name: Wait for SFTPGo service to become active (up to 180s)
-      ansible.builtin.systemd:
+    - name: Wait for the SFTPGo systemd service to become active (up to 180s)
+      ansible.builtin.systemd_service:
         name: sftpgo.service
       register: sftpgo_service
       until: sftpgo_service.status.ActiveState == 'active'
       retries: 36
       delay: 5
+      # So that giving up is reported by the assertion below rather than as a
+      # wall of systemd unit properties.
+      failed_when: false
 
-    - name: Assert SFTPGo service is active
+    # `Restart=always` in the systemd unit means that even a container which crashes
+    # and gets restarted reads as active here, so this is a precondition rather than
+    # a result.
+    - name: Assert the SFTPGo systemd service is active
       ansible.builtin.assert:
         that: sftpgo_service.status.ActiveState == 'active'
-        fail_msg: "sftpgo.service not active ({{ sftpgo_service.status.ActiveState }})"
+        fail_msg: "sftpgo.service is not active ({{ sftpgo_service.status.ActiveState }})"
         success_msg: "sftpgo.service is active"
 
-    - name: Retrieve SFTPGo service log for debugging
+    - name: Retrieve the SFTPGo systemd service log for debugging
       when: sftpgo_debug_service_enabled | bool
       ansible.builtin.command:
         cmd: journalctl -xeu sftpgo.service
