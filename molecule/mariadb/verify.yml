@@ -158,13 +158,13 @@
           Authorization: "Bearer {{ sftpgo_token.json.access_token }}"
         status_code: [200]
         follow_redirects: none
-      register: sftpgo_version_endpoint
+      register: sftpgo_version_reported
 
     - name: Assert the running SFTPGo is the version this role installs
       ansible.builtin.assert:
-        that: sftpgo_version_endpoint.json.version == sftpgo_defaults.sftpgo_version | regex_replace('^v', '')
-        fail_msg: "SFTPGo reports {{ sftpgo_version_endpoint.json.version | default('none') }}, expected {{ sftpgo_defaults.sftpgo_version }}"
-        success_msg: "SFTPGo reports {{ sftpgo_version_endpoint.json.version }}"
+        that: sftpgo_version_reported.json.version == sftpgo_defaults.sftpgo_version | regex_replace('^v', '')
+        fail_msg: "SFTPGo reports {{ sftpgo_version_reported.json.version | default('none') }}, expected {{ sftpgo_defaults.sftpgo_version }}"
+        success_msg: "SFTPGo reports {{ sftpgo_version_reported.json.version }}"
 
     - name: Determine which container image SFTPGo runs
       ansible.builtin.command:
@@ -396,7 +396,7 @@
       ansible.builtin.debug:
         msg:
           - "SFTPGo systemd: {{ sftpgo_service.status.ActiveState }}"
-          - "SFTPGo version: {{ sftpgo_version_endpoint.json.version }}"
+          - "SFTPGo version: {{ sftpgo_version_reported.json.version }}"
           - "SFTPGo image: {{ sftpgo_container_image_in_use.stdout }}"
           - "SFTPGo data provider: {{ sftpgo_status.json.data_provider.driver }} in the {{ sftpgo_database_name }} MariaDB database"
           - "SFTPGo SFTP round trip: {{ sftpgo_resolved.data_path }}/{{ sftpgo_verify_username }}/{{ sftpgo_verify_remote_name }}"
