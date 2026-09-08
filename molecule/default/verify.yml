@@ -60,7 +60,7 @@
     - name: Retrieve the SFTPGo systemd service log for debugging
       when: sftpgo_debug_service_enabled | bool
       ansible.builtin.command:
-        cmd: journalctl -xeu sftpgo.service
+        cmd: journalctl --no-pager --output=cat --unit=sftpgo.service
       changed_when: false
 
     # `/healthz` answers 200 unconditionally, including on a completely
