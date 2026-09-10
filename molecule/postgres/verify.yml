@@ -30,15 +30,6 @@
         file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
         name: sftpgo_defaults
 
-    - name: Read the values the role resolved
-      ansible.builtin.slurp:
-        src: /root/sftpgo-molecule-resolved.json
-      register: sftpgo_resolved_raw
-
-    - name: Remember the values the role resolved
-      ansible.builtin.set_fact:
-        sftpgo_resolved: "{{ sftpgo_resolved_raw.content | b64decode | from_json }}"
-
     - name: Wait for the SFTPGo systemd service to become active (up to 180s)
       ansible.builtin.systemd_service:
         name: sftpgo.service
@@ -64,6 +55,15 @@
       ansible.builtin.command:
         cmd: journalctl --no-pager --output=cat --unit=sftpgo.service
       changed_when: false
+
+    - name: Read the values the role resolved
+      ansible.builtin.slurp:
+        src: /root/sftpgo-molecule-resolved.json
+      register: sftpgo_resolved_raw
+
+    - name: Remember the values the role resolved
+      ansible.builtin.set_fact:
+        sftpgo_resolved: "{{ sftpgo_resolved_raw.content | b64decode | from_json }}"
 
     # The connection string is what the role builds out of the Postgres
     # variables, and getting it wrong is the failure mode this scenario exists
