@@ -24,6 +24,8 @@
     sftpgo_verify_key_path: /root/sftpgo-molecule-key
 
   tasks:
+    - name: Verify that SFTPGo works
+      block:
     # The role is not included in this playbook, so its defaults are not in
     # scope. Reading defaults/main.yml directly ties the version assertion
     # below.
@@ -401,3 +403,19 @@
           - "SFTPGo data provider: {{ sftpgo_status.json.data_provider.driver }} in the {{ sftpgo_database_name }} MariaDB database"
           - "SFTPGo SFTP round trip: {{ sftpgo_resolved.data_path }}/{{ sftpgo_verify_username }}/{{ sftpgo_verify_remote_name }}"
           - "SFTPGo WebDAV round trip: {{ sftpgo_resolved.data_path }}/{{ sftpgo_verify_username }}/{{ sftpgo_verify_webdav_remote_name }}"
+
+      rescue:
+        # Whatever went wrong, the reason is almost always in the systemd service log.
+        - name: Retrieve the SFTPGo systemd service log
+          ansible.builtin.command:
+            cmd: journalctl --no-pager --output=cat --unit=sftpgo.service
+          register: sftpgo_service_log
+          changed_when: false
+
+        - name: Show the SFTPGo systemd service log
+          ansible.builtin.debug:
+            var: sftpgo_service_log.stdout_lines
+
+        - name: Fail because verification did not pass
+          ansible.builtin.fail:
+            msg: "SFTPGo verification failed. The systemd service log is printed above."
