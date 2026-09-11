@@ -21,6 +21,10 @@
     sftpgo_verify_key_path: /root/sftpgo-molecule-key
     sftpgo_verify_wrong_key_path: /root/sftpgo-molecule-wrong-key
 
+    sftpgo_verify_units:
+      - sftpgo.service
+      - postgres.service
+
   tasks:
     - name: Verify that SFTPGo works
       block:
@@ -32,13 +36,14 @@
             file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
             name: sftpgo_defaults
 
-        - name: Wait for the SFTPGo systemd service to become active (up to 180s)
+        - name: Wait for the SFTPGo systemd services to become active (up to 180s each)
           ansible.builtin.systemd_service:
-            name: sftpgo.service
-          register: sftpgo_service
-          until: sftpgo_service.status.ActiveState == 'active'
+            name: "{{ item }}"
+          register: sftpgo_services
+          until: sftpgo_services.status.ActiveState == 'active'
           retries: 36
           delay: 5
+          loop: "{{ sftpgo_verify_units }}"
           # So that giving up is reported by the assertion below rather than as a
           # wall of systemd unit properties.
           failed_when: false
@@ -46,17 +51,20 @@
         # `Restart=always` in the systemd unit means that even a container which crashes
         # and gets restarted reads as active here, so this is a precondition rather than
         # a result.
-        - name: Assert the SFTPGo systemd service is active
+        - name: Assert the SFTPGo systemd services are active
           ansible.builtin.assert:
-            that: sftpgo_service.status.ActiveState == 'active'
-            fail_msg: "sftpgo.service is not active ({{ sftpgo_service.status.ActiveState }})"
-            success_msg: "sftpgo.service is active"
+            that: sftpgo_services.results | map(attribute='status.ActiveState') | unique | list == ['active']
+            fail_msg: >-
+              Not every service is active:
+              {{ dict(sftpgo_verify_units | zip(sftpgo_services.results | map(attribute='status.ActiveState'))) }}
+            success_msg: "Every systemd service is active"
 
-        - name: Retrieve the SFTPGo systemd service log for debugging
+        - name: Retrieve the SFTPGo systemd services log for debugging
           when: sftpgo_debug_service_enabled | bool
           ansible.builtin.command:
-            cmd: journalctl --no-pager --output=cat --unit=sftpgo.service
+            cmd: "journalctl --no-pager --output=cat --unit={{ item }}"
           changed_when: false
+          loop: "{{ sftpgo_verify_units }}"
 
         - name: Read the values the role resolved
           ansible.builtin.slurp:
@@ -435,7 +443,7 @@
         - name: Show the SFTPGo verification summary
           ansible.builtin.debug:
             msg:
-              - "SFTPGo systemd: {{ sftpgo_service.status.ActiveState }}"
+              - "SFTPGo systemd: {% for unit, state in sftpgo_verify_units | zip(sftpgo_services.results | map(attribute='status.ActiveState')) %}{{ unit }} ({{ state }}){% if not loop.last %}, {% endif %}{% endfor %}"
               - "SFTPGo version: {{ sftpgo_version_reported.json.version }}"
               - "SFTPGo image: {{ sftpgo_container_image_in_use.stdout }}"
               - "SFTPGo data provider: {{ sftpgo_status.json.data_provider.driver }} in the {{ sftpgo_database_name }} Postgres database"
