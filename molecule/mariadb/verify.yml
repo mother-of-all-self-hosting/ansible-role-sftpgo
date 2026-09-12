@@ -92,16 +92,25 @@
         # `/healthz` answers 200 unconditionally, including on a completely
         # unconfigured SFTPGo, so it is good for nothing but waiting for the HTTP
         # listener to come up. It is never asserted on.
-        - name: Wait for SFTPGo to start listening (up to 5m)
+        - name: Wait for SFTPGo to report itself healthy (up to 180s)
           ansible.builtin.uri:
             url: "{{ sftpgo_verify_base_url }}/healthz"
             method: GET
             status_code: [200]
             follow_redirects: none
-          register: sftpgo_healthz
-          until: sftpgo_healthz.status == 200
-          retries: 60
+          register: sftpgo_health
+          until: sftpgo_health.status == 200
+          retries: 36
           delay: 5
+          # So that giving up is reported by the assertion below rather than as a
+          # wall of systemd unit properties.
+          failed_when: false
+
+        - name: Assert SFTPGo reports itself healthy
+          ansible.builtin.assert:
+            that: sftpgo_health.status == 200
+            fail_msg: "SFTPGo did not report itself healthy: {{ sftpgo_health.status | default('no response') }}"
+            success_msg: "SFTPGo reports itself healthy"
 
         - name: Ask SFTPGo for its web interfaces and its REST API without a token
           ansible.builtin.uri:
