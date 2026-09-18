@@ -192,7 +192,7 @@ Take a look at:
 
 - [`defaults/main.yml`](../defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `sftpgo_environment_variables_additional_variables` variable
 
-See [this page](https://docs.sftpgo.com/latest/config-file/) for a complete list of SFTPGo's config options that you could put in `sftpgo_environment_variables_additional_variables`.
+See [this page](https://docs.sftpgo.com/latest/config-file/) for a complete list of SFTPGo's config options that you can put in `sftpgo_environment_variables_additional_variables`.
 
 For example, you can enable OpenID Connect (OIDC) for the web interfaces by adding environment variables such as `SFTPGO_HTTPD__BINDINGS__0__OIDC__CONFIG_URL=https://example.com` to it. See [this section](https://docs.sftpgo.com/latest/config-file/#http-server) for details.
 
