@@ -196,6 +196,12 @@ sftpgo_container_extra_arguments: "{{ sftpgo_container_extra_arguments_auto + sf
 sftpgo_container_extra_arguments_auto: []
 sftpgo_container_extra_arguments_custom: []
 
+# A list of extra arguments to pass to the process inside the container
+# Example: ['--SOME_ARGUMENT']
+sftpgo_process_extra_arguments: "{{ sftpgo_process_extra_arguments_auto + sftpgo_process_extra_arguments_custom }}"
+sftpgo_process_extra_arguments_auto: []
+sftpgo_process_extra_arguments_custom: []
+
 # Specifies the value of the `X-XSS-Protection` header
 # Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
 #
