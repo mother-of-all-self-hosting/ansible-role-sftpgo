@@ -29,7 +29,7 @@ SFTPGo is a full-featured and highly configurable event-driven file transfer sol
 See the project's [documentation](https://docs.sftpgo.com/latest/) to learn what SFTPGo does and why it might be useful to you.
 
 >[!NOTE]
-> There are two versions of SFTPGo provided by the developer: the free (as in speech) version released under [AGPL 3.0 license](https://github.com/drakkan/sftpgo/blob/main/LICENSE) and the nonfree ["Enterprise" version](https://docs.sftpgo.com/enterprise/#enterprise-edition). This role makes it possible for you to install the former (the free version). See [this page](https://sftpgo.com/compliance.html) for the official information about licensing.
+> There are two versions of SFTPGo provided by the developer: the free (as in speech) version released under [AGPL 3.0 license](https://github.com/drakkan/sftpgo/blob/main/LICENSE) and the nonfree ["Enterprise" version](https://docs.sftpgo.com/enterprise/#enterprise-edition). This role makes it possible for you to install the former (the free version). Refer to [this page](https://sftpgo.com/compliance.html) for the official information about licensing.
 
 ## Prerequisites
 
@@ -120,7 +120,7 @@ sftpgo_database_postgres_socket_enabled: false
 
 ### Enable interfaces for WebAdmin and WebClient (optional)
 
-Because the theme used in WebAdmin and WebClient user interfaces is proprietary (see [this section](https://docs.sftpgo.com/latest/#licensing) for additional information), this role disables them by default.
+Because the theme used in WebAdmin and WebClient user interfaces is proprietary (refer to [this section](https://docs.sftpgo.com/latest/#licensing) for additional information), this role disables them by default.
 
 To enable them, add the following configuration to your `vars.yml` file:
 
@@ -182,7 +182,7 @@ sftpgo_environment_variables_webdavd_certificate_key_file: ""
 
 SFTPGo can natively expose metrics to Prometheus.
 
-If you are looking for an integration, you can check out the MASH playbook. See [this section of the documentation on the playbook](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/services/sftpgo.md#integrating-with-prometheus-optional) for more information.
+If you are looking for an integration, you can check out the MASH playbook. Refer to [this section of the documentation on the playbook](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/services/sftpgo.md#integrating-with-prometheus-optional) for more information.
 
 ### Extending the configuration
 
@@ -192,9 +192,9 @@ Take a look at:
 
 - [`defaults/main.yml`](../defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `sftpgo_environment_variables_additional_variables` variable
 
-See [this page](https://docs.sftpgo.com/latest/config-file/) for a complete list of SFTPGo's config options that you can put in `sftpgo_environment_variables_additional_variables`.
+Refer to [this page](https://docs.sftpgo.com/latest/config-file/) for a complete list of SFTPGo's config options that you can put in `sftpgo_environment_variables_additional_variables`.
 
-For example, you can enable OpenID Connect (OIDC) for the web interfaces by adding environment variables such as `SFTPGO_HTTPD__BINDINGS__0__OIDC__CONFIG_URL=https://example.com` to it. See [this section](https://docs.sftpgo.com/latest/config-file/#http-server) for details.
+For example, you can enable OpenID Connect (OIDC) for the web interfaces by adding environment variables such as `SFTPGO_HTTPD__BINDINGS__0__OIDC__CONFIG_URL=https://example.com` to it. Refer to [this section](https://docs.sftpgo.com/latest/config-file/#http-server) for details.
 
 >[!NOTE]
 > You can check [this page on the documentation](https://docs.sftpgo.com/latest/env-vars/) for the conversion rule of settings into environment variables.
