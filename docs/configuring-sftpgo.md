@@ -78,7 +78,7 @@ sftpgo_hostname: "example.com"
 
 After adjusting the hostname, make sure to adjust your DNS records to point the domain to your server.
 
-### Specify data driver (optional)
+### Specify data driver
 
 You can specify a "data driver" for the database used by SFTPGo.
 
