@@ -359,6 +359,9 @@ sftpgo_environment_variables_data_provider_connection_string_postgres: |-
 # Specify the timezone
 sftpgo_environment_variables_tz: UTC
 
+# Specify the initial setup wizard protection code
+sftpgo_environment_variables_httpd_setup_installation_code: ""
+
 # Control if WebDAV is enabled
 sftpgo_environment_variables_webdavd_enabled: false
 
