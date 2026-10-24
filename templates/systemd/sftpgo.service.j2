@@ -31,6 +31,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       --log-driver=none \
       --user={{ sftpgo_uid }}:{{ sftpgo_gid }} \
       --cap-drop=ALL \
+      --read-only \
       --network={{ sftpgo_container_network }} \
       {% if sftpgo_container_http_host_bind_port %}
       -p {{ sftpgo_container_http_host_bind_port }}:{{ sftpgo_container_http_port }} \
