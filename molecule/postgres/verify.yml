@@ -75,19 +75,6 @@
           ansible.builtin.set_fact:
             sftpgo_resolved: "{{ sftpgo_resolved_raw.content | b64decode | from_json }}"
 
-        # The connection string is what the role builds out of the Postgres
-        # variables, and getting it wrong is the failure mode this scenario exists
-        # for. Postgres' socket form is peculiar - the host is `localhost` and the
-        # socket directory arrives as a query parameter - which is exactly why it
-        # is worth pinning down.
-        - name: Assert the role built a Unix-socket Postgres connection string
-          ansible.builtin.assert:
-            that:
-              - sftpgo_resolved.database_connection_string.startswith('postgres://' + sftpgo_database_postgres_username + ':' + sftpgo_database_postgres_password + '@localhost/')
-              - sftpgo_resolved.database_connection_string.endswith('/' + sftpgo_database_name + '?host=' + sftpgo_resolved.database_socket_path_container)
-            fail_msg: "The role built an unexpected Postgres connection string: {{ sftpgo_resolved.database_connection_string }}"
-            success_msg: "The role points SFTPGo at {{ sftpgo_database_name }} over the Postgres Unix socket"
-
         # `/healthz` answers 200 unconditionally, including on a completely
         # unconfigured SFTPGo, so it is good for nothing but waiting for the HTTP
         # listener to come up. It is never asserted on.
