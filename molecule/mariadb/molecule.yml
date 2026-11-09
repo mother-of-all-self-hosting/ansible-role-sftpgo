@@ -79,8 +79,8 @@ provisioner:
         sftpgo_environment_variables_sftpgo_default_admin_password: molecule-admin-password-mariadb
 
         # Variables required for SFTPGo to connect to the MariaDB database (via Unix socket)
-        sftpgo_database_mysql_username: my_database_username
-        sftpgo_database_mysql_password: my_database_password
+        sftpgo_database_mysql_username: /#@my_database_username?%
+        sftpgo_database_mysql_password: /#@my_database_password?%
         sftpgo_database_name: sftpgo
         sftpgo_database_mysql_socket_enabled: true
         sftpgo_database_mysql_socket_path_host: "{{ mariadb_run_path }}"

@@ -343,7 +343,7 @@ sftpgo_environment_variables_data_provider_connection_string_mysql: |-
   {%- endif -%}
 
 sftpgo_environment_variables_data_provider_connection_string_postgres: |-
-  postgres://{{ sftpgo_database_postgres_username }}:{{ sftpgo_database_postgres_password }}@
+  postgres://{{ sftpgo_database_postgres_username | urlencode | replace('/', '%2F') }}:{{ sftpgo_database_postgres_password | urlencode | replace('/', '%2F') }}@
   {%- if sftpgo_database_postgres_socket_enabled -%}
   localhost/{{ sftpgo_database_name }}?host={{ sftpgo_database_postgres_socket_path_container }}
   {%- else -%}
