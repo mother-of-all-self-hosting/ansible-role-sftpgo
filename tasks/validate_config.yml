@@ -38,9 +38,6 @@
   with_items:
     - { "name": "sftpgo_uid", "when": true }
     - { "name": "sftpgo_gid", "when": true }
-    - { "name": "sftpgo_hostname", "when": true }
-    - { "name": "sftpgo_path_prefix", "when": true }
-    - { "name": "sftpgo_container_network", "when": true }
     - { "name": "sftpgo_environment_variables_data_provider_driver", "when": true }
     - { "name": "sftpgo_environment_variables_httpd_setup_installation_code", "when": "{{ not sftpgo_environment_variables_data_provider_create_default_admin }}" }
 
