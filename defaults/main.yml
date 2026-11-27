@@ -389,7 +389,7 @@ sftpgo_environment_variables_sftpgo_default_admin_password: ""
 sftpgo_environment_variables_httpd_bindings_0_enable_web_admin: false
 sftpgo_environment_variables_httpd_bindings_0_enable_web_client: false
 sftpgo_environment_variables_httpd_bindings_0_enable_rest_api: true
-sftpgo_environment_variables_httpd_bindings_0_enabled_login_methods: 0
+sftpgo_environment_variables_httpd_bindings_0_disabled_login_methods: 0
 
 # Specify settings related to branding (for the first httpd binding)
 sftpgo_environment_variables_httpd_bindings_0_branding_name: ""
